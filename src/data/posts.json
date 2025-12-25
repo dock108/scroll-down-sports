@@ -1,0 +1,37 @@
+[
+  {
+    "game_id": "game_1",
+    "team": "GSW",
+    "tweet_url": "https://twitter.com/warriors/status/1761806498890576044",
+    "posted_at": "2024-03-10T19:12:00Z",
+    "has_video": true
+  },
+  {
+    "game_id": "game_1",
+    "team": "LAL",
+    "tweet_url": "https://twitter.com/Lakers/status/1761915242049712481",
+    "posted_at": "2024-03-10T20:02:00Z",
+    "has_video": false
+  },
+  {
+    "game_id": "game_1",
+    "team": "GSW",
+    "tweet_url": "https://twitter.com/warriors/status/1761926165636313519",
+    "posted_at": "2024-03-10T20:20:00Z",
+    "has_video": true
+  },
+  {
+    "game_id": "game_2",
+    "team": "NYK",
+    "tweet_url": "https://twitter.com/nyknicks/status/1762234208940513468",
+    "posted_at": "2024-03-11T23:45:00Z",
+    "has_video": true
+  },
+  {
+    "game_id": "game_2",
+    "team": "MIA",
+    "tweet_url": "https://twitter.com/MiamiHEAT/status/1762241087730424024",
+    "posted_at": "2024-03-12T00:10:00Z",
+    "has_video": false
+  }
+]
