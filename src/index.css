@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.tweet-shell {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: #0f172a;
+}
+
+.tweet-shell blockquote {
+  margin: 0;
+}
+
+.tweet-shell iframe {
+  width: 100% !important;
+}
