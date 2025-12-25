@@ -9,6 +9,7 @@ import FinalStats from '../components/FinalStats';
 import useSpoilerState from '../hooks/useSpoilerState';
 import { GameDetails, MockGameAdapter } from '../adapters/GameAdapter';
 import { MockPostAdapter, TimelinePost } from '../adapters/PostAdapter';
+import { logUiEvent } from '../utils/uiTelemetry';
 
 const DWELL_TIME_MS = 1400;
 const VELOCITY_THRESHOLD = 0.7;
@@ -18,9 +19,10 @@ const ORIENTATION_LOCK_MS = 1800;
 const GameReplay = () => {
   const { gameId } = useParams();
   const { spoilersAllowed, revealSpoilers } = useSpoilerState();
-  const [canReveal, setCanReveal] = useState(false);
+  const [revealUnlocked, setRevealUnlocked] = useState(false);
   const [game, setGame] = useState<GameDetails | null | undefined>(undefined);
   const [timelinePosts, setTimelinePosts] = useState<TimelinePost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const lastScrollY = useRef<number | null>(null);
   const lastScrollTime = useRef<number | null>(null);
   const dwellTimer = useRef<number | null>(null);
@@ -31,12 +33,14 @@ const GameReplay = () => {
 
   useEffect(() => {
     let isActive = true;
+    setIsLoading(true);
 
     const loadGameData = async () => {
       if (!gameId) {
         if (isActive) {
           setGame(null);
           setTimelinePosts([]);
+          setIsLoading(false);
         }
         return;
       }
@@ -49,6 +53,7 @@ const GameReplay = () => {
       if (isActive) {
         setGame(gameResult);
         setTimelinePosts(postResult);
+        setIsLoading(false);
       }
     };
 
@@ -57,6 +62,7 @@ const GameReplay = () => {
       if (isActive) {
         setGame(null);
         setTimelinePosts([]);
+        setIsLoading(false);
       }
     });
 
@@ -67,9 +73,11 @@ const GameReplay = () => {
 
   useEffect(() => {
     const handleScroll = () => {
+      if (revealUnlocked || spoilersAllowed) {
+        return;
+      }
       const now = Date.now();
       if (orientationLockUntil.current && now < orientationLockUntil.current) {
-        setCanReveal(false);
         return;
       }
       const currentY = window.scrollY;
@@ -85,12 +93,12 @@ const GameReplay = () => {
         if (velocity < VELOCITY_THRESHOLD && nearEnd) {
           if (!dwellTimer.current) {
             dwellTimer.current = window.setTimeout(() => {
-              setCanReveal(true);
+              setRevealUnlocked(true);
+              logUiEvent('scroll_boundary_reached');
               dwellTimer.current = null;
             }, DWELL_TIME_MS);
           }
         } else {
-          setCanReveal(false);
           if (dwellTimer.current) {
             window.clearTimeout(dwellTimer.current);
             dwellTimer.current = null;
@@ -103,7 +111,6 @@ const GameReplay = () => {
     };
 
     const handleOrientationChange = () => {
-      setCanReveal(false);
       orientationLockUntil.current = Date.now() + ORIENTATION_LOCK_MS;
       if (dwellTimer.current) {
         window.clearTimeout(dwellTimer.current);
@@ -122,15 +129,38 @@ const GameReplay = () => {
         dwellTimer.current = null;
       }
     };
-  }, []);
+  }, [revealUnlocked, spoilersAllowed]);
 
-  if (game === undefined) {
-    return null;
+  useEffect(() => {
+    setRevealUnlocked(false);
+  }, [gameId]);
+
+  if (isLoading) {
+    return (
+      <main className="mx-auto min-h-screen max-w-[700px] px-6 py-12">
+        <div className="space-y-4 animate-pulse">
+          <div className="h-4 w-32 rounded-full bg-slate-800"></div>
+          <div className="h-8 w-3/4 rounded-full bg-slate-800"></div>
+          <div className="h-5 w-2/3 rounded-full bg-slate-800"></div>
+        </div>
+        <div className="mt-10 space-y-6">
+          {Array.from({ length: 3 }, (_, index) => (
+            <div key={`timeline-skeleton-${index}`} className="tweet-shell">
+              <div className="tweet-skeleton">
+                <div className="tweet-skeleton__bar"></div>
+                <div className="tweet-skeleton__bar"></div>
+                <div className="tweet-skeleton__bar"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+    );
   }
 
   if (!game) {
     return (
-      <main className="mx-auto min-h-screen max-w-3xl px-6 py-16">
+      <main className="mx-auto min-h-screen max-w-[700px] px-6 py-16">
         <p className="text-slate-300">Game not found.</p>
         <Link className="mt-4 inline-flex text-emerald-300" to="/games">
           Back to games
@@ -140,9 +170,10 @@ const GameReplay = () => {
   }
 
   const dateLabel = formatGameDate(game.date);
+  const showRevealButton = revealUnlocked && !spoilersAllowed;
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl space-y-12 px-6 py-12">
+    <main className="mx-auto min-h-screen max-w-[700px] space-y-12 px-6 pb-24 pt-12">
       <Link className="text-xs uppercase tracking-[0.3em] text-slate-500" to="/games">
         Back to games
       </Link>
@@ -164,7 +195,7 @@ const GameReplay = () => {
           ))
         ) : (
           <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/50 p-6 text-slate-400">
-            No highlights available.
+            This game has no highlight posts available yet.
           </div>
         )}
       </section>
@@ -175,14 +206,20 @@ const GameReplay = () => {
         </p>
         <StatsTeaser />
       </section>
-      {!spoilersAllowed ? <RevealScoreButton enabled={canReveal} onReveal={revealSpoilers} /> : null}
-      {spoilersAllowed ? (
-        <FinalStats
-          homeTeam={game.homeTeam || 'Home'}
-          awayTeam={game.awayTeam || 'Away'}
-          attendance={game.attendance ?? 0}
+      {showRevealButton ? (
+        <RevealScoreButton
+          onReveal={() => {
+            revealSpoilers();
+            logUiEvent('reveal_clicked');
+          }}
         />
       ) : null}
+      <FinalStats
+        revealed={spoilersAllowed}
+        homeTeam={game.homeTeam || 'Home'}
+        awayTeam={game.awayTeam || 'Away'}
+        attendance={game.attendance ?? 0}
+      />
     </main>
   );
 };

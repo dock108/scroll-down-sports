@@ -24,20 +24,29 @@ const GameList = () => {
   const end = query.get('end');
   const adapter = useMemo(() => new MockGameAdapter(), []);
   const [games, setGames] = useState<GameSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const startDate = parseQueryDate(start);
+  const endDate = parseQueryDate(end);
+  const hasInvalidParams =
+    (start && !startDate) || (end && !endDate) || (!!startDate && !!endDate && startDate > endDate);
 
   useEffect(() => {
     let isActive = true;
 
     const loadGames = async () => {
-      const startDate = parseQueryDate(start);
-      const endDate = parseQueryDate(end);
+      setIsLoading(true);
+      const hasRangeIssue = !!startDate && !!endDate && startDate > endDate;
+      const filteredStart = hasRangeIssue ? null : startDate;
+      const filteredEnd = hasRangeIssue ? null : endDate;
       const results = await adapter.getGamesByDateRange(
-        startDate ?? new Date('invalid'),
-        endDate ?? new Date('invalid'),
+        filteredStart ?? new Date('invalid'),
+        filteredEnd ?? new Date('invalid'),
       );
 
       if (isActive) {
         setGames(results.filter((game) => game.id));
+        setIsLoading(false);
       }
     };
 
@@ -45,16 +54,17 @@ const GameList = () => {
       console.warn('Failed to load games.', error);
       if (isActive) {
         setGames([]);
+        setIsLoading(false);
       }
     });
 
     return () => {
       isActive = false;
     };
-  }, [adapter, end, start]);
+  }, [adapter, end, start, startDate, endDate]);
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-6 py-12">
+    <main className="mx-auto min-h-screen max-w-[700px] px-6 py-12">
       <div className="space-y-3">
         <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Games</p>
         <h1 className="text-3xl font-semibold">Choose a game to replay</h1>
@@ -65,9 +75,25 @@ const GameList = () => {
         ) : (
           <p className="text-slate-500">Select a date range to load mock games.</p>
         )}
+        {hasInvalidParams ? (
+          <p className="text-sm text-amber-200">Invalid date range supplied. Showing all available games.</p>
+        ) : null}
       </div>
       <div className="mt-8 grid gap-4">
-        {games.length ? (
+        {isLoading ? (
+          Array.from({ length: 3 }, (_, index) => (
+            <div
+              key={`skeleton-${index}`}
+              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
+            >
+              <div className="space-y-3 animate-pulse">
+                <div className="h-3 w-32 rounded-full bg-slate-800"></div>
+                <div className="h-6 w-2/3 rounded-full bg-slate-800"></div>
+                <div className="h-4 w-1/3 rounded-full bg-slate-800"></div>
+              </div>
+            </div>
+          ))
+        ) : games.length ? (
           games.map((game) => (
             <Link
               key={game.id}
@@ -89,7 +115,7 @@ const GameList = () => {
           ))
         ) : (
           <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 p-6 text-slate-400">
-            No games found in this range yet.
+            No finished games in this range.
           </div>
         )}
       </div>
