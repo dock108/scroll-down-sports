@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GameSummary, MockGameAdapter } from '../adapters/GameAdapter';
+import { GameSummary } from '../adapters/GameAdapter';
+import { getGameAdapter, ApiConnectionError } from '../adapters';
+import DataError from '../components/DataError';
 
 const getDateLabel = (value?: string) => {
   if (!value) {
@@ -17,17 +19,32 @@ const getDateLabel = (value?: string) => {
   });
 };
 
+const parseQueryDate = (value?: string | null) => {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed;
+};
+
 const GameList = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const start = query.get('start');
   const end = query.get('end');
-  const adapter = useMemo(() => new MockGameAdapter(), []);
+  const adapter = useMemo(() => getGameAdapter(), []);
   const [games, setGames] = useState<GameSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
-  const startDate = parseQueryDate(start);
-  const endDate = parseQueryDate(end);
+  // Memoize parsed dates to prevent infinite re-renders
+  const startDate = useMemo(() => parseQueryDate(start), [start]);
+  const endDate = useMemo(() => parseQueryDate(end), [end]);
+
   const hasInvalidParams =
     (start && !startDate) || (end && !endDate) || (!!startDate && !!endDate && startDate > endDate);
 
@@ -36,32 +53,53 @@ const GameList = () => {
 
     const loadGames = async () => {
       setIsLoading(true);
+      setError(null);
+
       const hasRangeIssue = !!startDate && !!endDate && startDate > endDate;
       const filteredStart = hasRangeIssue ? null : startDate;
       const filteredEnd = hasRangeIssue ? null : endDate;
-      const results = await adapter.getGamesByDateRange(
-        filteredStart ?? new Date('invalid'),
-        filteredEnd ?? new Date('invalid'),
-      );
 
-      if (isActive) {
-        setGames(results.filter((game) => game.id));
-        setIsLoading(false);
+      try {
+        const results = await adapter.getGamesByDateRange(
+          filteredStart ?? new Date('invalid'),
+          filteredEnd ?? new Date('invalid'),
+        );
+
+        if (isActive) {
+          setGames(results.filter((game) => game.id));
+          setIsLoading(false);
+        }
+      } catch (err) {
+        if (isActive) {
+          if (err instanceof ApiConnectionError) {
+            setError(err.message);
+          } else {
+            setError('Failed to load games');
+          }
+          setGames([]);
+          setIsLoading(false);
+        }
       }
     };
 
-    loadGames().catch((error) => {
-      console.warn('Failed to load games.', error);
-      if (isActive) {
-        setGames([]);
-        setIsLoading(false);
-      }
-    });
+    loadGames();
 
     return () => {
       isActive = false;
     };
-  }, [adapter, end, start, startDate, endDate]);
+  }, [adapter, startDate, endDate, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount((c) => c + 1);
+  };
+
+  if (error) {
+    return (
+      <main className="mx-auto min-h-screen max-w-3xl px-6 py-10">
+        <DataError message={error} onRetry={handleRetry} />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto min-h-screen max-w-3xl px-6 py-10">
@@ -73,7 +111,7 @@ const GameList = () => {
             Showing games {start ? `from ${start}` : ''} {end ? `to ${end}` : ''}
           </p>
         ) : (
-          <p className="text-gray-600">Select a date range to load mock games.</p>
+          <p className="text-gray-600">Select a date range to load games.</p>
         )}
         {hasInvalidParams ? (
           <p className="text-sm text-amber-700">
@@ -118,14 +156,3 @@ const GameList = () => {
 };
 
 export default GameList;
-
-const parseQueryDate = (value?: string | null) => {
-  if (!value) {
-    return null;
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return null;
-  }
-  return parsed;
-};

@@ -6,15 +6,34 @@ import TimelineDivider from '../components/TimelineDivider';
 import StatsTeaser from '../components/StatsTeaser';
 import RevealScoreButton from '../components/RevealScoreButton';
 import FinalStats from '../components/FinalStats';
+import DataError from '../components/DataError';
 import useSpoilerState from '../hooks/useSpoilerState';
-import { GameDetails, MockGameAdapter } from '../adapters/GameAdapter';
+import { GameDetails } from '../adapters/GameAdapter';
 import { MockPostAdapter, TimelinePost } from '../adapters/PostAdapter';
+import { getGameAdapter, ApiConnectionError } from '../adapters';
 import { logUiEvent } from '../utils/uiTelemetry';
 
 const DWELL_TIME_MS = 1400;
 const VELOCITY_THRESHOLD = 0.7;
 const END_BUFFER_PX = 240;
 const ORIENTATION_LOCK_MS = 1800;
+
+const formatGameDate = (value?: string) => {
+  if (!value) {
+    return 'Date TBD';
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  return parsed.toLocaleString(undefined, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+};
 
 const GameReplay = () => {
   const { gameId } = useParams();
@@ -23,53 +42,61 @@ const GameReplay = () => {
   const [game, setGame] = useState<GameDetails | null | undefined>(undefined);
   const [timelinePosts, setTimelinePosts] = useState<TimelinePost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const lastScrollY = useRef<number | null>(null);
   const lastScrollTime = useRef<number | null>(null);
   const dwellTimer = useRef<number | null>(null);
   const orientationLockUntil = useRef<number | null>(null);
 
-  const gameAdapter = useMemo(() => new MockGameAdapter(), []);
+  const gameAdapter = useMemo(() => getGameAdapter(), []);
   const postAdapter = useMemo(() => new MockPostAdapter(), []);
 
   useEffect(() => {
     let isActive = true;
-    setIsLoading(true);
 
     const loadGameData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       if (!gameId) {
+        setGame(null);
+        setTimelinePosts([]);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const [gameResult, postResult] = await Promise.all([
+          gameAdapter.getGameById(gameId),
+          postAdapter.getPostsForGame(gameId),
+        ]);
+
         if (isActive) {
+          setGame(gameResult);
+          setTimelinePosts(postResult);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        if (isActive) {
+          if (err instanceof ApiConnectionError) {
+            setError(err.message);
+          } else {
+            setError('Failed to load game');
+          }
           setGame(null);
           setTimelinePosts([]);
           setIsLoading(false);
         }
-        return;
-      }
-
-      const [gameResult, postResult] = await Promise.all([
-        gameAdapter.getGameById(gameId),
-        postAdapter.getPostsForGame(gameId),
-      ]);
-
-      if (isActive) {
-        setGame(gameResult);
-        setTimelinePosts(postResult);
-        setIsLoading(false);
       }
     };
 
-    loadGameData().catch((error) => {
-      console.warn('Failed to load game data.', error);
-      if (isActive) {
-        setGame(null);
-        setTimelinePosts([]);
-        setIsLoading(false);
-      }
-    });
+    loadGameData();
 
     return () => {
       isActive = false;
     };
-  }, [gameAdapter, gameId, postAdapter]);
+  }, [gameAdapter, gameId, postAdapter, retryCount]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,6 +161,18 @@ const GameReplay = () => {
   useEffect(() => {
     setRevealUnlocked(false);
   }, [gameId]);
+
+  const handleRetry = () => {
+    setRetryCount((c) => c + 1);
+  };
+
+  if (error) {
+    return (
+      <main className="mx-auto min-h-screen max-w-3xl px-6 py-10">
+        <DataError message={error} onRetry={handleRetry} />
+      </main>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -203,7 +242,7 @@ const GameReplay = () => {
       <section className="space-y-6">
         <div className="space-y-1">
           <p className="text-sm uppercase tracking-[0.3em] text-gray-500">Final stats (hidden)</p>
-          <p className="text-sm text-gray-600">Reveal when you’re ready.</p>
+          <p className="text-sm text-gray-600">Reveal when you're ready.</p>
         </div>
         <StatsTeaser />
       </section>
@@ -226,20 +265,3 @@ const GameReplay = () => {
 };
 
 export default GameReplay;
-
-const formatGameDate = (value?: string) => {
-  if (!value) {
-    return 'Date TBD';
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-  return parsed.toLocaleString(undefined, {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-};

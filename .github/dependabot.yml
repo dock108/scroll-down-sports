@@ -1,0 +1,79 @@
+version: 2
+
+updates:
+  # NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    groups:
+      # Group all production dependencies together
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group all dev dependencies together
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group React ecosystem updates
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      # Group Vite and build tooling
+      vite:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "postcss*"
+          - "tailwindcss*"
+          - "autoprefixer*"
+      # Group TypeScript and linting
+      typescript-lint:
+        patterns:
+          - "typescript*"
+          - "@typescript-eslint/*"
+          - "eslint*"
+          - "@types/*"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # Docker base images
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    groups:
+      docker-images:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "deps(docker)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "deps(actions)"
+

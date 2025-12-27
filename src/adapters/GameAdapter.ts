@@ -72,6 +72,21 @@ export interface GameSummary {
 
 export interface GameDetails extends GameSummary {
   starters?: Record<string, string[]>;
+  homeScore?: number;
+  awayScore?: number;
+  teamStats?: Array<{
+    team: string;
+    is_home: boolean;
+    stats: Record<string, any>;
+  }>;
+  playerStats?: Array<{
+    team: string;
+    player_name: string;
+    points?: number;
+    rebounds?: number;
+    assists?: number;
+    raw_stats: Record<string, any>;
+  }>;
 }
 
 export interface GameAdapter {
