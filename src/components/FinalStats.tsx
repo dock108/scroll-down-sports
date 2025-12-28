@@ -44,7 +44,7 @@ const getMinutes = (raw: Record<string, any>): number => {
       if (!isNaN(parsed)) return parsed;
     }
   }
-  return 0;
+        return 0;
 };
 
 // Format stat value - round minutes to 2 decimal places
@@ -276,7 +276,7 @@ const FinalStats = ({
         <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4 text-center">
           <div className="text-2xl font-semibold text-gray-900">{attendance.toLocaleString()}</div>
           <div className="mt-1 text-xs uppercase tracking-[0.2em] text-gray-500">Attendance</div>
-        </div>
+            </div>
       )}
       </div>
     </div>
