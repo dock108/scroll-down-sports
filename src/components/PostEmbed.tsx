@@ -64,11 +64,29 @@ const normalizePostUrl = (url: string) => {
 const PostEmbed = ({ postUrl, hasVideo }: PostEmbedProps) => {
   const normalizedUrl = useMemo(() => normalizePostUrl(postUrl), [postUrl]);
   const [embedStatus, setEmbedStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [locallyRevealed, setLocallyRevealed] = useState(false);
   const embedTimeout = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const prevUrlRef = useRef(normalizedUrl);
+
+  // Reset local reveal state when URL changes (new post)
+  if (prevUrlRef.current !== normalizedUrl) {
+    prevUrlRef.current = normalizedUrl;
+    setLocallyRevealed(false);
+  }
+
+  // Derive isRevealed directly to avoid one-frame delay
+  const isRevealed = spoilersAllowed || locallyRevealed;
 
   useEffect(() => {
     let isActive = true;
+    if (!isRevealed) {
+      setEmbedStatus('loading');
+      return () => {
+        isActive = false;
+      };
+    }
+
     setEmbedStatus('loading');
 
     loadTwitterScript()
@@ -104,33 +122,60 @@ const PostEmbed = ({ postUrl, hasVideo }: PostEmbedProps) => {
         embedTimeout.current = null;
       }
     };
-  }, [normalizedUrl]);
+  }, [isRevealed, normalizedUrl]);
 
   return (
-    <div className="mb-4">
-      <div
-        ref={containerRef}
-        className="tweet-shell focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-200"
-      >
-        <blockquote className="twitter-tweet">
-          <a href={normalizedUrl}></a>
-        </blockquote>
-        {embedStatus === 'loading' ? (
-          <div className="tweet-skeleton" role="status" aria-live="polite">
-            Loading {hasVideo ? 'highlight' : 'moment'}…
-          </div>
-        ) : null}
-        {embedStatus === 'failed' ? (
-          <div className="tweet-fallback">
-            <p>
-              Highlight unavailable —{' '}
-              <a href={normalizedUrl} target="_blank" rel="noreferrer">
-                open on X
-              </a>
-            </p>
-          </div>
-        ) : null}
+    <div className="space-y-1 mb-2">
+      <div className="flex items-center justify-between text-[0.6rem] uppercase tracking-[0.2em] text-gray-400">
+        <span>{hasVideo ? 'Video Highlight' : 'Moment'}</span>
+        <span>Official Team Post</span>
       </div>
+      {!isRevealed ? (
+        <div className="tweet-shell flex flex-col items-center justify-center gap-4 px-6 text-center text-gray-600">
+          <div className="rounded-full bg-gray-100 px-3 py-1 text-[0.55rem] uppercase tracking-[0.3em] text-gray-500">
+            Spoiler Safe
+          </div>
+          <p className="text-sm">
+            This highlight stays hidden until you choose to reveal it.
+          </p>
+          <button
+            type="button"
+            onClick={() => setLocallyRevealed(true)}
+            className="rounded-full bg-gray-900 px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+          >
+            Reveal Highlight
+          </button>
+          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gray-400">
+            Scores stay hidden until you tap reveal
+          </p>
+        </div>
+      ) : (
+        <div
+          ref={containerRef}
+          className="tweet-shell focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-200"
+        >
+          <blockquote className="twitter-tweet">
+            <a href={normalizedUrl}></a>
+          </blockquote>
+          {embedStatus === 'loading' ? (
+            <div className="tweet-skeleton" aria-hidden="true">
+              <div className="tweet-skeleton__bar"></div>
+              <div className="tweet-skeleton__bar"></div>
+              <div className="tweet-skeleton__bar"></div>
+            </div>
+          ) : null}
+          {embedStatus === 'failed' ? (
+            <div className="tweet-fallback">
+              <p>
+                Highlight unavailable —{' '}
+                <a href={normalizedUrl} target="_blank" rel="noreferrer">
+                  open on X
+                </a>
+              </p>
+            </div>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 };
