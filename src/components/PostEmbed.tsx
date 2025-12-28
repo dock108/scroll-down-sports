@@ -141,7 +141,7 @@ const PostEmbed = ({ postUrl, hasVideo }: PostEmbedProps) => {
           <button
             type="button"
             onClick={() => setLocallyRevealed(true)}
-            className="rounded-full bg-gray-900 px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+            className="min-h-[44px] rounded-full bg-gray-900 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
           >
             Reveal Highlight
           </button>

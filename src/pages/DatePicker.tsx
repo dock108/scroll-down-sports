@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import PageLayout from '../components/PageLayout';
 
 const DatePicker = () => {
   const navigate = useNavigate();
@@ -40,12 +39,14 @@ const DatePicker = () => {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col justify-center px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col justify-center px-6 py-12 sm:px-8">
       <div className="space-y-10">
         <div className="space-y-4">
           <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Scroll Down Sports</p>
-          <h1 className="text-4xl font-semibold text-gray-900">Watch finished games spoiler-free</h1>
-          <p className="max-w-2xl text-lg text-gray-600">
+          <h1 className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+            Experience finished games spoiler-free
+          </h1>
+          <p className="max-w-2xl text-base text-gray-600 sm:text-lg">
             Pick a date range to browse completed matchups with no scores shown. Read the game story like an article, then
             reveal the final when you&apos;re ready.
           </p>
@@ -54,9 +55,6 @@ const DatePicker = () => {
           <p className="text-sm font-medium text-amber-700">
             Invalid dates detected — defaults loaded.
           </p>
-        </div>
-        {parsedParams.hasInvalid ? (
-          <p className="text-sm font-medium text-amber-600">Invalid dates detected — defaults loaded.</p>
         ) : null}
         <div className="space-y-4">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
@@ -66,7 +64,7 @@ const DatePicker = () => {
                 type="date"
                 value={startDate}
                 onChange={(event) => setStartDate(event.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="min-h-[48px] w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
             <div className="flex-1 space-y-2">
@@ -75,20 +73,20 @@ const DatePicker = () => {
                 type="date"
                 value={endDate}
                 onChange={(event) => setEndDate(event.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="min-h-[48px] w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-base text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
             <button
               type="button"
               onClick={handleSubmit}
-              className="inline-flex w-full items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 sm:w-auto"
+              className="inline-flex min-h-[48px] w-full items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-blue-500 sm:w-auto"
             >
               Browse games
             </button>
           </div>
         </div>
       </div>
-    </PageLayout>
+    </main>
   );
 };
 
