@@ -1,18 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import GameHeader from '../components/GameHeader';
 import PostEmbed from '../components/PostEmbed';
 import TimelineDivider from '../components/TimelineDivider';
-import StatsTeaser from '../components/StatsTeaser';
-import RevealScoreButton from '../components/RevealScoreButton';
 import FinalStats from '../components/FinalStats';
 import DataError from '../components/DataError';
 import PageLayout from '../components/PageLayout';
-import useSpoilerState from '../hooks/useSpoilerState';
 import { GameDetails } from '../adapters/GameAdapter';
 import { TimelinePost } from '../adapters/PostAdapter';
 import { getGameAdapter, getSocialPostAdapter, ApiConnectionError } from '../adapters';
-import { logUiEvent } from '../utils/uiTelemetry';
 
 const formatGameDate = (value?: string) => {
   if (!value) {
@@ -33,12 +29,15 @@ const formatGameDate = (value?: string) => {
 
 const GameReplay = () => {
   const { gameId } = useParams();
-  const { spoilersAllowed, revealSpoilers } = useSpoilerState();
   const [game, setGame] = useState<GameDetails | null | undefined>(undefined);
   const [timelinePosts, setTimelinePosts] = useState<TimelinePost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [statsRevealed, setStatsRevealed] = useState(false);
+  
+  // Ref for the element that triggers auto-reveal when scrolled into view
+  const statsRevealTriggerRef = useRef<HTMLDivElement | null>(null);
 
   const gameAdapter = useMemo(() => getGameAdapter(), []);
   const postAdapter = useMemo(() => getSocialPostAdapter(), []);
@@ -88,6 +87,26 @@ const GameReplay = () => {
       isActive = false;
     };
   }, [gameAdapter, gameId, postAdapter, retryCount]);
+
+  // Auto-reveal stats when user scrolls past all highlights
+  useEffect(() => {
+    if (statsRevealed || !statsRevealTriggerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          setStatsRevealed(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(statsRevealTriggerRef.current);
+
+    return () => observer.disconnect();
+  }, [statsRevealed, isLoading]);
 
   const handleRetry = () => {
     setRetryCount((c) => c + 1);
@@ -164,22 +183,10 @@ const GameReplay = () => {
         )}
       </section>
       <TimelineDivider />
-      {!spoilersAllowed ? (
-        <section className="space-y-6 pb-24 text-center">
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-gray-700">Final stats are hidden — reveal when ready</p>
-          </div>
-          <StatsTeaser />
-          <RevealScoreButton
-            onReveal={() => {
-              revealSpoilers();
-              logUiEvent('reveal_clicked');
-            }}
-          />
-        </section>
-      ) : null}
+      {/* This invisible element triggers auto-reveal when scrolled into view */}
+      <div ref={statsRevealTriggerRef} aria-hidden="true" />
       <FinalStats
-        revealed={spoilersAllowed}
+        revealed={statsRevealed}
         homeTeam={game.homeTeam || 'Home'}
         awayTeam={game.awayTeam || 'Away'}
         attendance={game.attendance ?? 0}

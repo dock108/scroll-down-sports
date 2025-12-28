@@ -204,26 +204,9 @@ const FinalStats = ({
             : 'translate-y-4 border border-transparent p-0'
         }`}
       >
-      <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-6">Final Score + Stats</p>
+      <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-6">Player Stats + Team Stats + Final Score</p>
 
-      {/* 1. FINAL SCORE */}
-      <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 mb-8">
-        <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Final Score</p>
-        <div className="flex items-center justify-between py-2 border-b border-gray-200">
-          <div className="text-xl font-semibold text-gray-800">{awayTeam}</div>
-          <div className="text-4xl font-bold text-gray-900">
-            {Number.isFinite(awayScore ?? NaN) ? awayScore : '—'}
-          </div>
-        </div>
-        <div className="flex items-center justify-between py-2">
-          <div className="text-xl font-semibold text-gray-800">{homeTeam}</div>
-          <div className="text-4xl font-bold text-gray-900">
-            {Number.isFinite(homeScore ?? NaN) ? homeScore : '—'}
-          </div>
-        </div>
-      </div>
-
-      {/* 2. PLAYER STATS - Box score by team */}
+      {/* 1. PLAYER STATS - Box score by team */}
       {(awayPlayers.length > 0 || homePlayers.length > 0) && (
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Box Score</p>
@@ -232,7 +215,7 @@ const FinalStats = ({
         </div>
       )}
 
-      {/* 3. TEAM STATS - Full display for each team (excluding points) */}
+      {/* 2. TEAM STATS - Full display for each team (excluding points) */}
       {(awayTeamStats || homeTeamStats) && (
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Team Stats</p>
@@ -274,6 +257,23 @@ const FinalStats = ({
           </div>
         </div>
       )}
+
+      {/* 3. FINAL SCORE */}
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 mb-8">
+        <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Final Score</p>
+        <div className="flex items-center justify-between py-2 border-b border-gray-200">
+          <div className="text-xl font-semibold text-gray-800">{awayTeam}</div>
+          <div className="text-4xl font-bold text-gray-900">
+            {Number.isFinite(awayScore ?? NaN) ? awayScore : '—'}
+          </div>
+        </div>
+        <div className="flex items-center justify-between py-2">
+          <div className="text-xl font-semibold text-gray-800">{homeTeam}</div>
+          <div className="text-4xl font-bold text-gray-900">
+            {Number.isFinite(homeScore ?? NaN) ? homeScore : '—'}
+          </div>
+        </div>
+      </div>
 
       {/* Attendance */}
       {attendance > 0 && (
