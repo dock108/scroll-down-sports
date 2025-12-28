@@ -161,9 +161,9 @@ const FinalStats = ({
           <table className="w-full text-sm text-gray-800 whitespace-nowrap">
             <thead className="bg-gray-50 text-xs uppercase tracking-[0.15em] text-gray-500">
               <tr>
-                <th className="sticky top-0 left-0 bg-gray-50 px-3 py-2 text-left">Player</th>
+                <th className="sticky top-0 left-0 z-30 bg-gray-50 px-3 py-2 text-left">Player</th>
                 {allPlayerStatKeys.map((key) => (
-                  <th key={key} className="sticky top-0 bg-gray-50 px-2 py-2 text-right tabular-nums">
+                  <th key={key} className="sticky top-0 z-20 bg-gray-50 px-2 py-2 text-right tabular-nums">
                     {formatStatLabel(key)}
                   </th>
                 ))}
@@ -173,9 +173,9 @@ const FinalStats = ({
               {players.map((p, idx) => (
                 <tr
                   key={`${p.player_name}-${idx}`}
-                  className="border-t border-gray-100 odd:bg-gray-50/60 hover:bg-gray-50/80"
+                  className="group border-t border-gray-100 odd:bg-gray-50/60 hover:bg-gray-50/80"
                 >
-                  <td className="sticky left-0 bg-inherit px-3 py-2 font-medium">{p.player_name}</td>
+                  <td className="sticky left-0 z-10 bg-white group-odd:bg-gray-50 px-3 py-2 font-medium">{p.player_name}</td>
                   {allPlayerStatKeys.map((key) => (
                     <td key={key} className="px-2 py-2 text-right tabular-nums">
                       {formatStatValue(key, p.raw_stats?.[key])}
