@@ -4,7 +4,7 @@ interface RevealScoreButtonProps {
 
 const RevealScoreButton = ({ onReveal }: RevealScoreButtonProps) => {
   return (
-    <div className="sticky bottom-4 z-20 flex flex-col items-center gap-3 pb-4">
+    <div className="sticky bottom-6 z-20 flex flex-col items-center gap-3 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
       <button
         type="button"
         onClick={onReveal}
