@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import PageLayout from '../components/PageLayout';
 
 const DatePicker = () => {
   const navigate = useNavigate();
@@ -41,11 +42,17 @@ const DatePicker = () => {
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col justify-center px-6 py-12">
       <div className="space-y-10">
-        <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Scroll Down Sports</p>
-        <div className="space-y-3">
-          <h1 className="text-4xl font-semibold text-gray-900">Catch up on games spoiler-free</h1>
+        <div className="space-y-4">
+          <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Scroll Down Sports</p>
+          <h1 className="text-4xl font-semibold text-gray-900">Watch finished games spoiler-free</h1>
           <p className="max-w-2xl text-lg text-gray-600">
-            Choose a date range to follow the season in order without seeing the final scores.
+            Pick a date range to browse completed matchups with no scores shown. Read the game story like an article, then
+            reveal the final when you&apos;re ready.
+          </p>
+        </div>
+        {parsedParams.hasInvalid ? (
+          <p className="text-sm font-medium text-amber-700">
+            Invalid dates detected — defaults loaded.
           </p>
         </div>
         {parsedParams.hasInvalid ? (
@@ -81,7 +88,7 @@ const DatePicker = () => {
           </div>
         </div>
       </div>
-    </main>
+    </PageLayout>
   );
 };
 
