@@ -43,10 +43,9 @@ const DatePicker = () => {
       <div className="space-y-8">
         <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Scroll Down Sports</p>
         <div className="space-y-4">
-          <h1 className="text-4xl font-semibold text-gray-900">Watch finished games spoiler-free</h1>
+          <h1 className="text-4xl font-semibold text-gray-900">Catch up on finished games spoiler-free</h1>
           <p className="max-w-2xl text-lg text-gray-600">
-            Pick a date range and dive into completed games with highlights and stories first. Reveal the final score only when
-            you are ready.
+            Pick a date range to catch up chronologically and get a feel for the game before seeing the final score.
           </p>
         </div>
         {parsedParams.hasInvalid ? (
