@@ -14,13 +14,14 @@ The goal is to validate the spoiler-safe replay experience before wiring live da
 - **Date range filtering** for finished games.
 - **Article-style replay** with embedded highlight posts.
 - **Mock data adapters** backed by JSON fixtures for easy iteration.
+- **Optional API adapters** for live game + social data.
 
 ## What works today vs. mocked
 
 **Working today**
 
 - UI flow: date picker → game list → replay timeline.
-- Spoiler-safe reveal that unlocks final stats at the end of the scroll.
+- Spoiler-safe reveal that auto-unlocks final stats after the last highlight enters view.
 - Twitter/X embeds for highlights.
 
 **Mocked**
@@ -28,6 +29,10 @@ The goal is to validate the spoiler-safe replay experience before wiring live da
 - Games list and details (`src/data/games.json`).
 - Timeline highlight posts (`src/data/posts.json`).
 - API adapters in `src/adapters` are shaped for future wiring but run against mocks by default.
+
+**API-ready (opt-in)**
+
+- Set `VITE_SPORTS_API_URL` to enable `SportsApiAdapter` and `SocialPostApiAdapter` for live data.
 
 ## Tech stack
 
@@ -44,6 +49,12 @@ npm run dev
 ```
 
 Open the local URL printed by Vite (typically `http://localhost:5173`).
+
+## Environment variables
+
+| Variable             | Purpose                                                      |
+| -------------------- | ------------------------------------------------------------ |
+| `VITE_SPORTS_API_URL`| Base URL for sports + social APIs (enables API adapters).    |
 
 ## Scripts
 

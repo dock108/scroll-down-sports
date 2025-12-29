@@ -13,11 +13,18 @@ npm run dev
 
 Then open the URL printed by Vite (typically `http://localhost:5173`).
 
+### Optional API wiring
+
+Set `VITE_SPORTS_API_URL` to use live adapters instead of mock JSON:
+
+- `SportsApiAdapter` for games and stats.
+- `SocialPostApiAdapter` for highlight posts.
+
 ## How X highlights are handled
 
 - `src/components/embeds/XHighlight.tsx` renders custom highlight cards with native media elements.
 - Media URLs are remote and never re-hosted; captions link back to the original X post.
-- The component reserves layout space with a fixed aspect ratio and skeleton loader.
+- The component reserves layout space with a fixed aspect ratio, lazy-loads media on scroll, and clamps long captions with a “Show more” toggle.
 
 ## Spoiler-safe philosophy
 
