@@ -211,11 +211,9 @@ export const XHighlight = ({ post }: { post: TimelinePost }) => {
               />
             ) : null}
           </div>
-        ) : (
-          captionContent
-        )}
+        ) : null}
+        {captionContent}
       </div>
-      {mediaType !== 'none' ? captionContent : null}
     </article>
   );
 };
