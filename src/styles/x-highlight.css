@@ -64,7 +64,7 @@
   text-align: center;
   padding: var(--space-5);
   color: var(--color-muted);
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--color-surface-overlay, rgba(255, 255, 255, 0.85));
   gap: var(--space-2);
 }
 
