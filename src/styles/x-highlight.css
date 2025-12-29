@@ -182,7 +182,7 @@
   animation: highlightPulse 1.6s ease-in-out infinite;
 }
 
-.x-highlight__caption-bar.is-short {
+.x-highlight__caption-bar--short {
   width: 60%;
 }
 
