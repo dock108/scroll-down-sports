@@ -120,7 +120,11 @@
   position: absolute;
   inset: auto 0 0 0;
   height: 1.2em;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--color-surface));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, transparent 100%, var(--color-surface)),
+    var(--color-surface)
+  );
 }
 
 .x-highlight__caption-toggle {
