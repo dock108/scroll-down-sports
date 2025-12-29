@@ -1,23 +1,14 @@
 # Spoiler controls
 
-Spoilers are hidden by default in the replay view. The user must scroll near the end of the highlight timeline and dwell before the score reveal button appears.
+Spoilers are hidden by default in the replay view. The final score and stat tables are revealed only after the reader scrolls through the highlight timeline.
 
 ## Key behaviors
 
-- **Spoilers hidden by default**: `useSpoilerState` initializes `spoilersAllowed` to `false`.
-- **Scroll gating**: `GameReplay` listens to `scroll` events and calculates velocity to ensure the user is intentionally lingering near the bottom of the page.
-- **Reveal unlock**: When the user scrolls near the end and their scroll velocity is below the configured threshold for the dwell window, `RevealScoreButton` appears.
-- **Explicit reveal**: The score and final stats are revealed only after clicking the button.
+- **Spoilers hidden by default**: `FinalStats` receives a `revealed={false}` state until the scroll trigger fires.
+- **Scroll gating**: `GameReplay` places an invisible marker below the final highlight and watches it with an `IntersectionObserver`.
+- **Auto reveal**: When the marker enters the viewport, the replay toggles `statsRevealed` and `FinalStats` animates into view.
 
-## Tunable constants
+## Implementation pointers
 
-Located near the top of `src/pages/GameReplay.tsx`:
-
-- `DWELL_TIME_MS`: How long the user must linger near the bottom before unlocking.
-- `VELOCITY_THRESHOLD`: Maximum scroll velocity that still counts as a dwell.
-- `END_BUFFER_PX`: Distance from the bottom that counts as "near end".
-- `ORIENTATION_LOCK_MS`: Grace window after device orientation changes.
-
-## Telemetry
-
-When UI telemetry is enabled, scroll unlocks and reveal clicks are logged via `logUiEvent` in `src/utils/uiTelemetry.ts`.
+- Scroll gating is implemented in `src/pages/GameReplay.tsx` via `statsRevealTriggerRef` and a `useEffect` that creates the `IntersectionObserver`.
+- `FinalStats` handles the reveal animation and uses `aria-hidden` to keep spoilers out of the accessibility tree until unlocked.

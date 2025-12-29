@@ -67,20 +67,23 @@ Spoiler filtering is handled in the backend at collection time. The frontend add
 The frontend renders a custom highlight card that includes:
 
 - Native `<video>` (or `<img>`) with remote URLs
-- Caption in the format `@handle: text`
+- Caption in the format `@handle: text`, with spoiler-like scores trimmed
 - Caption link to the original X post
 - Subtle X icon next to the handle
-- Skeleton loaders and fixed aspect ratio to avoid layout shift
+- Skeleton loaders, fixed aspect ratio, and lazy-loading to avoid layout shift
 
 ## Backend API (Expected)
 
-The frontend expects these endpoints:
+The frontend expects these endpoints (scoped to `VITE_SPORTS_API_URL`):
+
+### GET /api/social/posts/game/:gameId
+
+Returns posts for a game, sorted by `posted_at` ascending.
 
 ### GET /api/social/posts
 
 Query params:
 
-- `game_id` - Filter by game
 - `team_id` - Filter by team
 - `start_date` - ISO date string
 - `end_date` - ISO date string
@@ -94,7 +97,7 @@ Response:
       "id": "uuid",
       "game_id": 123,
       "team_id": "GSW",
-      "tweet_url": "https://twitter.com/warriors/status/...",
+      "post_url": "https://twitter.com/warriors/status/...",
       "tweet_id": "1761806498890576044",
       "posted_at": "2024-03-10T19:12:00Z",
       "source_handle": "warriors",
@@ -112,7 +115,7 @@ Response:
 
 For MVP, posts can be collected manually:
 
-1. Go to team's Twitter profile during game window
+1. Go to the team's X profile during the game window
 2. Identify highlight posts (videos preferred)
 3. Copy tweet URLs
 4. Insert into `game_social_posts` table
