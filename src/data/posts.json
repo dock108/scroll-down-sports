@@ -4,34 +4,57 @@
     "team": "GSW",
     "tweet_url": "https://twitter.com/warriors/status/1761806498890576044",
     "posted_at": "2024-03-10T19:12:00Z",
-    "has_video": true
+    "has_video": true,
+    "media_type": "video",
+    "video_url": "https://video.twimg.com/ext_tw_video/1761806498890576044/pu/vid/1280x720/highlight.mp4",
+    "image_url": "https://pbs.twimg.com/media/GH8YHn1aQAAc9p7.jpg",
+    "source_handle": "warriors",
+    "tweet_text": "Steph takes it coast-to-coast for the early bucket."
   },
   {
     "game_id": "game_1",
     "team": "LAL",
     "tweet_url": "https://twitter.com/Lakers/status/1761915242049712481",
     "posted_at": "2024-03-10T20:02:00Z",
-    "has_video": false
+    "has_video": false,
+    "media_type": "image",
+    "image_url": "https://pbs.twimg.com/media/GH8YIl0aQAAq8t1.jpg",
+    "source_handle": "Lakers",
+    "tweet_text": "Bench mob bringing the energy in the second quarter."
   },
   {
     "game_id": "game_1",
     "team": "GSW",
     "tweet_url": "https://twitter.com/warriors/status/1761926165636313519",
     "posted_at": "2024-03-10T20:20:00Z",
-    "has_video": true
+    "has_video": true,
+    "media_type": "video",
+    "video_url": "https://video.twimg.com/ext_tw_video/1761926165636313519/pu/vid/1280x720/second-half.mp4",
+    "image_url": "https://pbs.twimg.com/media/GH8YLmxaQAApZmF.jpg",
+    "source_handle": "warriors",
+    "tweet_text": "Klay drills the catch-and-shoot triple off the swing pass."
   },
   {
     "game_id": "game_2",
     "team": "NYK",
     "tweet_url": "https://twitter.com/nyknicks/status/1762234208940513468",
     "posted_at": "2024-03-11T23:45:00Z",
-    "has_video": true
+    "has_video": true,
+    "media_type": "video",
+    "video_url": "https://video.twimg.com/ext_tw_video/1762234208940513468/pu/vid/1280x720/knicks-run.mp4",
+    "image_url": "https://pbs.twimg.com/media/GH9cLxNaAAANe2k.jpg",
+    "source_handle": "nyknicks",
+    "tweet_text": "Hart pushes the break and finishes through contact."
   },
   {
     "game_id": "game_2",
     "team": "MIA",
     "tweet_url": "https://twitter.com/MiamiHEAT/status/1762241087730424024",
     "posted_at": "2024-03-12T00:10:00Z",
-    "has_video": false
+    "has_video": false,
+    "media_type": "image",
+    "image_url": "https://pbs.twimg.com/media/GH9cUjjaAAAqI1t.jpg",
+    "source_handle": "MiamiHEAT",
+    "tweet_text": "Miami strings together stops and gets out in transition."
   }
 ]
