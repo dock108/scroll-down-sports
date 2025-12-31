@@ -102,7 +102,7 @@ export const XHighlight = ({ post }: { post: TimelinePost }) => {
     if (rawValue !== 'video' && rawValue !== 'image' && rawValue !== 'none') {
       console.warn('[SocialPost] Unexpected media_type value, normalized:', rawValue);
     }
-  }, [mediaType, post.mediaTypeRaw]);
+  }, [post.mediaTypeRaw]);
 
   const hasVideo = mediaType === 'video' && Boolean(post.videoUrl);
   const hasImage = mediaType === 'image' && Boolean(post.imageUrl);
