@@ -1,0 +1,10 @@
+services:
+  ui:
+    image: ${UI_IMAGE:-scroll-down-sports-ui:latest}
+    container_name: scroll-down-sports-ui-prod
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_APP_VERSION: ${VITE_APP_VERSION:-prod}
+    ports:
+      - '5173:80'
+

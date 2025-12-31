@@ -6,33 +6,18 @@ This codebase is intentionally simple — the UI must remain predictable and rea
 
 ## Project purpose
 
-The goal is to validate the spoiler-safe replay experience before wiring live data. The UI stays lightweight and readable so it is easy to iterate on flows, storytelling, and reveal mechanics.
+The goal is to provide a spoiler-safe game replay experience. Users can catch up on games they missed without accidentally seeing the final score before they're ready.
 
-## MVP scope
+## What works today
 
 - **Spoiler-safe browsing** with score reveal gated by scrolling behavior.
 - **Date range filtering** for finished games.
-- **Article-style replay** with embedded highlight posts.
-- **Mock data adapters** backed by JSON fixtures for easy iteration.
-- **Optional API adapters** for live game + social data (guarded by a feature flag).
-
-## What works today vs. mocked
-
-**Working today**
-
-- UI flow: date picker → game list → replay timeline.
-- Spoiler-safe reveal that auto-unlocks final stats after the last highlight enters view.
-- Twitter/X embeds for highlights.
-
-**Mocked**
-
-- Games list and details (`src/data/games.json`).
-- Timeline highlight posts (`src/data/posts.json`).
-- API adapters in `src/adapters` are shaped for future wiring but run against mocks by default.
-
-**API-ready (opt-in)**
-
-- Set `VITE_API_URL` and keep `VITE_USE_MOCK_ADAPTERS=false` to enable live adapters.
+- **Full play-by-play timeline** with all PBP events from the database.
+- **Social posts woven into timeline** — distributed proportionally across PBP events.
+- **Pre-game section** — First 20% of posts appear before the timeline.
+- **Collapsible quarters** — Each period is collapsed by default for easy navigation.
+- **Custom X/Twitter embeds** for highlights with images and text.
+- **Player and team stats** revealed after scrolling through the timeline.
 
 ## Tech stack
 
@@ -40,6 +25,7 @@ The goal is to validate the spoiler-safe replay experience before wiring live da
 - Vite
 - Tailwind CSS
 - React Router
+- Docker + nginx (production)
 
 ## Quick start
 
@@ -50,34 +36,23 @@ npm run dev
 
 Open the local URL printed by Vite (typically `http://localhost:5173`).
 
-If you need environment variables locally, copy `.env.example` to `.env` and update values.
-
-### Local Docker (dev)
-
-Use the dev compose file for hot reload and local API access:
-
-```bash
-docker compose -f docker-compose.dev.yml up --build
-```
+Ensure the sports admin API is running at `http://localhost:8000`.
 
 ## Environment variables
 
-| Variable                | Purpose                                                          |
-| ----------------------- | ---------------------------------------------------------------- |
-| `VITE_API_URL`          | Base URL for sports + social APIs.                               |
-| `VITE_USE_MOCK_ADAPTERS`| Set to `true` to force mock adapters.                            |
-| `VITE_APP_VERSION`      | Commit hash/version string displayed in the UI footer + status.  |
+| Variable           | Purpose                                                         |
+| ------------------ | --------------------------------------------------------------- |
+| `VITE_API_URL`     | Base URL for sports API (default: `http://localhost:8000`)      |
+| `VITE_APP_VERSION` | Commit hash/version string displayed in the UI footer + status. |
 
 ## Scripts
 
 ```bash
-npm run dev      # Start the Vite dev server
-npm run build    # Build for production
-npm run preview  # Preview the production build
-npm run build:prod   # Build for production with explicit mode
-npm run preview:prod # Preview production build (hosted on 0.0.0.0)
-npm run lint     # Run ESLint
-npm run format   # Format with Prettier
+npm run dev          # Start the Vite dev server
+npm run build        # Build for production
+npm run preview      # Preview the production build
+npm run lint         # Run ESLint
+npm run format       # Format with Prettier
 ```
 
 ## App routes
@@ -89,80 +64,50 @@ npm run format   # Format with Prettier
 | `/game/:gameId`                          | Spoiler-safe replay |
 | `/status`                                | Health/status page  |
 
-## Production container
+## Docker deployment
 
-The production container serves static assets with nginx and supports runtime env config via
-`/env-config.js`.
-
-Required environment variables for runtime configuration:
-
-- `VITE_API_URL`
-- `VITE_USE_MOCK_ADAPTERS`
-- `VITE_APP_VERSION`
-
-Docker Compose expects `UI_IMAGE` to point at the published container, for example:
+### Local development container
 
 ```bash
-UI_IMAGE=ghcr.io/your-org/scroll-down-sports-ui:latest
+docker compose -f docker-compose.local.yml up --build
 ```
 
-### Production Docker Compose
+Access at `http://localhost:5173`.
+
+### Production container
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.prod.yml up -d
 ```
 
-## CI/CD (GitHub Actions → Hetzner)
+## Page layout
 
-The workflow in `.github/workflows/ui-deploy.yml` builds and publishes the UI container on
-pushes to `main`, then connects to Hetzner to pull + restart the UI service.
-
-Required GitHub secrets:
-
-- `HETZNER_HOST`
-- `HETZNER_USER`
-- `HETZNER_SSH_KEY`
-- `HETZNER_SSH_PORT` (optional)
-- `HETZNER_APP_PATH` (path to the server directory containing `docker-compose.yml`)
-
-## Domain + proxy integration
-
-An nginx proxy config for `scrolldownsports.dock108.dev` lives at:
-
-- `docs/proxy/scrolldownsports.dock108.dev.conf`
-
-It enables gzip compression, long-lived caching for static assets, and forwards the `/status`
-health endpoint.
-
-## Rollback notes
-
-If a deploy needs to roll back on the server:
-
-```bash
-docker compose pull ui --ignore-pull-failures
-docker compose down ui
-docker compose up -d ui
+```
+[ Game Header (teams, date, venue) ]
+[ 🏟️ Pre-Game (expanded by default) ]
+[ 🏀 1st Quarter (collapsed) ]
+[ 🏀 2nd Quarter (collapsed) ]
+[ 🏀 3rd Quarter (collapsed) ]
+[ 🏀 4th Quarter (collapsed) ]
+[ Timeline Divider ]
+[ Player Stats + Team Stats + Final Score ]
+[ 🏆 Post-Game (collapsed) ]
 ```
 
-To roll back to a specific image tag, update `UI_IMAGE` in the server's `.env` file and re-run:
+## Roadmap
 
-```bash
-docker compose pull ui
-docker compose up -d ui
-```
-
-## Roadmap (short + real)
-
-1. Wire adapters to the real sports + social APIs.
-2. Replace JSON fixtures with DB-backed responses.
-3. Add richer play-by-play metadata while preserving spoiler-safe reveal.
+1. ✅ Wire adapters to the real sports + social APIs.
+2. ✅ Add play-by-play + social matching with spoiler-safe reveal.
+3. Improve social post matching with accurate game start times.
+4. Add post-game section (last 20% of posts).
+5. QA validation on real games.
 
 ## Documentation
 
 Additional documentation lives in `docs/`:
 
-- `docs/DEVELOPING.md` — local development + architecture notes.
+- `docs/DEVELOPING.md` — local development notes.
 - `docs/architecture.md` — component and routing overview.
-- `docs/data-models.md` — JSON schema expectations for mock data.
+- `docs/data-models.md` — API response schemas.
 - `docs/spoiler-controls.md` — spoiler-reveal behavior details.
-- `docs/README.md` — doc index.
+- `docs/x-integration.md` — X/Twitter embedding strategy.

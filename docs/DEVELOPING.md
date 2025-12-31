@@ -13,29 +13,44 @@ npm run dev
 
 Then open the URL printed by Vite (typically `http://localhost:5173`).
 
-### Optional API wiring
+### Prerequisites
 
-Set `VITE_API_URL` to use live adapters instead of mock JSON:
+- Node.js 20+
+- Sports admin API running at `http://localhost:8000`
 
-- `SportsApiAdapter` for games and stats.
-- `SocialPostApiAdapter` for highlight posts.
+### Environment
 
-To keep mocks enabled locally, set `VITE_USE_MOCK_ADAPTERS=true`.
+Set `VITE_API_URL` to the sports admin API base. The UI always fetches from the live API.
 
 ## How X highlights are handled
 
 - `src/components/embeds/XHighlight.tsx` renders custom highlight cards with native media elements.
 - Media URLs are remote and never re-hosted; captions link back to the original X post.
-- The component reserves layout space with a fixed aspect ratio, lazy-loads media on scroll, and clamps long captions with a “Show more” toggle.
+- The component reserves layout space with a fixed aspect ratio, lazy-loads media on scroll, and clamps long captions with a "Show more" toggle.
 
 ## Spoiler-safe philosophy
 
 - The replay timeline stays chronological so the scroll mirrors the game narrative.
 - The reveal for final stats is gated by an `IntersectionObserver` trigger after the last highlight.
-- Final scores appear at the end of the stats block to preserve the “no spoilers until you finish scrolling” promise.
+- Final scores appear at the end of the stats block to preserve the "no spoilers until you finish scrolling" promise.
 
-## Future DB wiring notes (placeholder)
+## Data flow
 
-- Adapters in `src/adapters` already mirror the payloads we expect from the backend.
-- Replacing mocks should only require swapping the adapter implementations and verifying the shape of `GameDetails` and `TimelinePost`.
-- When the DB/API wiring is ready, keep the spoiler-safe ordering and reveal logic unchanged.
+1. `CatchupApiAdapter` fetches from `/api/admin/sports/games/:id`
+2. Response is mapped to `CatchupResponse` with:
+   - Pre-game posts (first 20% chronologically)
+   - Timeline entries (PBP events with distributed social posts)
+   - Player and team stats
+   - Final score details
+3. `GameCatchup` renders collapsible sections for pre-game and each quarter
+4. Stats are hidden until user scrolls past the timeline
+
+## Key files
+
+| File | Purpose |
+| ---- | ------- |
+| `src/pages/GameCatchup.tsx` | Main catchup page with spoiler reveal |
+| `src/adapters/CatchupAdapter.ts` | Data fetching and mapping |
+| `src/components/embeds/XHighlight.tsx` | Social post card |
+| `src/components/timeline/CollapsibleSection.tsx` | Expandable section wrapper |
+| `src/components/timeline/TimelineSection.tsx` | PBP event + highlights |

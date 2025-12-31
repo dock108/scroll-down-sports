@@ -1,0 +1,49 @@
+# Cursor Rules — Scroll Down Sports
+
+## Purpose
+Ship a clean, spoiler-safe sports recap app.  
+MVP first. Iterate only when it improves UX or reliability.
+
+## Style & Tone
+- Direct, concise, practical.
+- No fluff explanations unless they unblock a decision.
+- Prefer boring, predictable code.
+
+## Decision Making
+- If something is unclear, make the safest assumption and leave a TODO.
+- Keep momentum. Do not stall waiting for clarification.
+
+## Product Truths
+- Users often arrive AFTER games are played.
+- They want context BEFORE spoilers.
+- They should always feel in control of reveals.
+
+## Code Guidelines
+- Small, incremental changes.
+- Do not rewrite major modules unless required.
+- Maintain existing patterns unless a clear gain exists.
+- Avoid new dependencies unless justified inline.
+
+## UI Principles
+- Clean, readable, consistent card layouts.
+- No cluttered embeds.
+- Spoiler-safe by default.
+
+## Documentation
+Whenever behavior changes:
+- update README if user-facing
+- add a short CHANGELOG note
+- leave comments explaining *why*, not *what*
+
+## Testing & Safety
+- If logic changes, update tests.
+- If no tests exist, add minimal coverage (don’t block work).
+
+## What NOT to do
+- Don’t over-architect or over-DRY.
+- Don’t silently “improve” behavior.
+- Don’t introduce breaking UI surprises.
+
+## Golden Rule
+Does this ship value sooner without breaking trust?
+If yes — do it. If not — TODO and move on.

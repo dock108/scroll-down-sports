@@ -1,6 +1,6 @@
 import { ApiConnectionError } from './SportsApiAdapter';
-import { MockPostAdapter, TimelinePost } from './PostAdapter';
-import { getApiBaseUrl, useMockAdapters } from '../utils/env';
+import { TimelinePost } from './PostAdapter';
+import { getApiBaseUrl } from '../utils/env';
 import { buildApiUrl, fetchJson } from '../utils/http';
 import { logger } from '../utils/logger';
 
@@ -136,16 +136,5 @@ const extractTweetId = (url: string) => {
  * Factory function to get the appropriate social post adapter
  */
 export function getSocialPostAdapter(): SocialPostAdapter {
-  if (useMockAdapters()) {
-    logger.info('Using mock social post adapter (feature flag enabled).');
-    return new MockPostAdapter();
-  }
-
-  const apiUrl = getApiBaseUrl();
-  if (!apiUrl) {
-    logger.warn('API URL missing; falling back to mock social post adapter.');
-    return new MockPostAdapter();
-  }
-
   return new SocialPostApiAdapter();
 }

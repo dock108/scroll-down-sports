@@ -1,5 +1,4 @@
 window.__APP_CONFIG__ = {
   VITE_API_URL: '',
-  VITE_USE_MOCK_ADAPTERS: '',
   VITE_APP_VERSION: '',
 };

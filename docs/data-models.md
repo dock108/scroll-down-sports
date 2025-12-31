@@ -1,99 +1,138 @@
 # Data models
 
-The app uses adapters to normalize data from multiple sources (local JSON for development, API responses for production). This allows the UI to tolerate different field names and data shapes.
-
-## Games (mock JSON: `src/data/games.json`)
-
-Each item represents a finished game.
-
-Required fields (normalized by `MockGameAdapter`):
-
-| Normalized field | Accepted keys                                  | Notes                             |
-| ---------------- | ---------------------------------------------- | --------------------------------- |
-| `id`             | `id`, `game_id`, `gameId`                      | Required for routing.             |
-| `date`           | `date`, `game_date`, `start_time`, `startTime` | ISO-8601 string preferred.        |
-| `homeTeam`       | `home_team`, `homeTeam`, `home`                | String abbreviation or full name. |
-| `awayTeam`       | `away_team`, `awayTeam`, `away`                | String abbreviation or full name. |
-
-Optional fields:
-
-| Normalized field | Accepted keys                             | Notes                                            |
-| ---------------- | ----------------------------------------- | ------------------------------------------------ |
-| `venue`          | `venue`, `arena`, `location`              | Displayed in lists and headers.                  |
-| `attendance`     | `attendance`, `crowd`, `attendance_total` | Numeric attendance.                              |
-| `starters`       | `starters`, `lineups`, `starting_lineups` | Object with team keys and array of player names. |
-
-Date filtering is applied in `MockGameAdapter.getGamesByDateRange`. Invalid or missing dates are treated as always-in-range so the game still appears.
+The app uses adapters to normalize API responses. This allows the UI to tolerate different field names and data shapes from the backend.
 
 ## Games (API: `SportsApiAdapter`)
 
-`SportsApiAdapter` expects summary and detail payloads from the sports API.
+Games are loaded from the sports admin API.
 
-Summary fields (`GET /api/admin/sports/games`):
+### Summary endpoint (`GET /api/admin/sports/games`)
 
 | Field       | Notes                         |
 | ----------- | ----------------------------- |
 | `id`        | Required for routing.         |
-| `game_date` | ISO-8601 string preferred.    |
-| `home_team` | Abbreviation or full name.    |
-| `away_team` | Abbreviation or full name.    |
+| `game_date` | ISO-8601 string.              |
+| `home_team` | Team name.                    |
+| `away_team` | Team name.                    |
 
-Detail fields (`GET /api/admin/sports/games/:id`):
+### Detail endpoint (`GET /api/admin/sports/games/:id`)
 
-| Field                 | Notes                                      |
-| --------------------- | ------------------------------------------ |
-| `game.home_score`     | Final score (optional if unavailable).     |
-| `game.away_score`     | Final score (optional if unavailable).     |
-| `team_stats`          | Array of team stat records.                |
-| `player_stats`        | Array of player stat records with `raw_stats`. |
+Returns a nested response with game details, stats, PBP, and social posts.
 
-## Timeline posts (mock JSON: `src/data/posts.json`)
+| Field          | Notes                                         |
+| -------------- | --------------------------------------------- |
+| `game`         | Game metadata (teams, date, venue, score)     |
+| `team_stats`   | Array of team stat records                    |
+| `player_stats` | Array of player stat records with `raw_stats` |
+| `plays`        | Array of play-by-play events                  |
+| `social_posts` | Array of social media posts                   |
 
-Each item represents a highlight post that appears in the replay timeline.
+## Social posts
 
-Required fields (normalized by `MockPostAdapter`):
+Each post represents a tweet/X post linked to a game.
 
-| Normalized field | Accepted keys                        | Notes                             |
-| ---------------- | ------------------------------------ | --------------------------------- |
-| `gameId`         | `game_id`, `gameId`, `game`          | Must match a game `id`.           |
-| `postUrl`        | `post_url`, `tweet_url`, `tweetUrl`, `url` | Used for embeds and fallback IDs. |
-| `postedAt`       | `posted_at`, `postedAt`, `timestamp` | ISO-8601 string preferred.        |
+| Field             | Type      | Notes                                |
+| ----------------- | --------- | ------------------------------------ |
+| `id`              | Number    | Primary key                          |
+| `post_url`        | String    | Full X post URL                      |
+| `posted_at`       | Timestamp | When the post was made               |
+| `has_video`       | Boolean   | Flag for video content               |
+| `team_abbreviation` | String  | Team abbreviation (e.g., "IND")      |
+| `tweet_text`      | Text      | Caption text for the post            |
+| `video_url`       | Text      | Remote video URL (optional)          |
+| `image_url`       | Text      | Remote image URL (optional)          |
+| `source_handle`   | Text      | X handle for attribution             |
+| `media_type`      | String    | `video`, `image`, or `none`          |
 
-Optional fields:
+**Note:** Some games may have incomplete social post data (null `tweet_text`, etc.) depending on scraper status.
 
-| Normalized field | Accepted keys                    | Notes                           |
-| ---------------- | -------------------------------- | ------------------------------- |
-| `team`           | `team`, `team_id`, `teamId`      | Displayed as metadata.          |
-| `hasVideo`       | `has_video`, `hasVideo`, `video` | Used to adjust embed treatment. |
-| `mediaType`      | `media_type`, `mediaType`        | `video`, `image`, or `none`.    |
-| `videoUrl`       | `video_url`, `videoUrl`          | Remote video URL (not hosted).  |
-| `imageUrl`       | `image_url`, `imageUrl`          | Remote image URL (not hosted).  |
-| `sourceHandle`   | `source_handle`, `sourceHandle`  | X handle for attribution.       |
-| `tweetText`      | `tweet_text`, `tweetText`, `text`| Caption text for the post.      |
+## Play-by-play events
 
-Posts are filtered by `gameId` and sorted by `postedAt` ascending before rendering.
+Each event represents a single play in the game.
 
-## Game social posts (API-backed)
+| Field                | Type    | Notes                              |
+| -------------------- | ------- | ---------------------------------- |
+| `play_index`         | Number  | Event order within game            |
+| `quarter`            | Number  | 1-4 for regulation, 5+ for OT      |
+| `game_clock`         | String  | Time remaining in period (MM:SS)   |
+| `play_type`          | String  | Event classification (nullable)    |
+| `team_abbreviation`  | String  | Team that made the play (nullable) |
+| `player_name`        | String  | Player involved (nullable)         |
+| `description`        | String  | Human-readable description         |
+| `home_score`         | Number  | Running home score (nullable)      |
+| `away_score`         | Number  | Running away score (nullable)      |
 
-Links X posts to games. Media URLs are stored but never re-hosted.
+## Catchup response (frontend model)
 
-| Field           | Type      | Notes                                |
-| --------------- | --------- | ------------------------------------ |
-| `id`            | UUID      | Primary key                          |
-| `game_id`       | FK        | References games table               |
-| `team_id`       | String    | Team abbreviation                    |
-| `post_url`      | String    | Full X post URL                      |
-| `tweet_id`      | String    | Optional original post ID            |
-| `posted_at`     | Timestamp | When the post was made               |
-| `has_video`     | Boolean   | Optional flag for video content      |
-| `media_type`    | String    | `video`, `image`, or `none`          |
-| `video_url`     | Text      | Remote video URL (not hosted)        |
-| `image_url`     | Text      | Remote image URL (not hosted)        |
-| `source_handle` | Text      | X handle for attribution             |
-| `tweet_text`    | Text      | Caption text for the post            |
+The `CatchupApiAdapter` transforms the API response into a frontend-friendly format:
 
-**Not stored:** Media files, engagement metrics.
+```typescript
+interface CatchupResponse {
+  game: CatchupGameHeader;        // Spoiler-safe header (no score)
+  preGamePosts: TimelinePost[];   // First 20% of posts chronologically
+  timeline: TimelineEntry[];      // PBP events + distributed highlights
+  postGamePosts: TimelinePost[];  // (TODO) Post-game tweets
+  playerStats: PlayerStat[];
+  teamStats: TeamStat[];
+  finalDetails: CatchupFinalDetails; // Score + attendance
+}
 
-Accessed via `SocialPostApiAdapter` or `getSocialPostAdapter()`.
+interface TimelineEntry {
+  event: PbpEvent;
+  highlights: TimelinePost[];     // Social posts matched to this event
+}
 
-See [X Integration](./x-integration.md) for full details on the X embedding strategy.
+interface CatchupGameHeader {
+  id: string;
+  homeTeam: string;
+  awayTeam: string;
+  date: string;
+  venue?: string;
+}
+
+interface CatchupFinalDetails {
+  homeScore?: number;
+  awayScore?: number;
+  attendance?: number;
+  notes?: string;
+}
+```
+
+## Normalized frontend types
+
+### TimelinePost
+
+```typescript
+interface TimelinePost {
+  id: string;
+  gameId: string;
+  team: string;
+  postUrl: string;
+  tweetId: string;
+  postedAt: string;
+  hasVideo?: boolean;
+  mediaType?: 'video' | 'image' | 'none';
+  videoUrl?: string;
+  imageUrl?: string;
+  sourceHandle?: string;
+  tweetText?: string;
+}
+```
+
+### PbpEvent
+
+```typescript
+interface PbpEvent {
+  id: string;
+  gameId: string;
+  period: number;
+  gameClock: string;
+  elapsedSeconds: number;
+  eventType: string;
+  description: string;
+  team?: string;
+  playerName?: string;
+  homeScore?: number;
+  awayScore?: number;
+}
+```
