@@ -5,6 +5,16 @@ import { normalizeMediaType, type TimelinePost } from './PostAdapter';
 import { getApiBaseUrl } from '../utils/env';
 import { logger } from '../utils/logger';
 
+// Import generated types from API spec
+import type {
+  GameDetailResponse as ApiGameDetailResponse,
+  GameMeta,
+  SocialPostEntry,
+  PlayEntry,
+  TeamStat as ApiTeamStat,
+  PlayerStat as ApiPlayerStat,
+} from '../generated';
+
 const getApiBase = () => getApiBaseUrl() || 'http://localhost:8000';
 
 /**
@@ -50,69 +60,20 @@ export interface CatchupResponse {
 }
 
 /**
- * API response shapes - matches /api/admin/sports/games/{id}
+ * API response shape - uses generated types from scroll-down-api-spec
+ * Extended with optional fields for game end time detection
  */
-
-type ApiGameResponse = {
-  game?: ApiGameData;
-  team_stats?: ApiTeamStat[];
-  player_stats?: ApiPlayerStat[];
-  plays?: ApiPbpEvent[];
-  social_posts?: ApiSocialPost[];
+type ApiGameResponse = ApiGameDetailResponse & {
+  game?: GameMeta & {
+    game_end_time?: string;
+    final_whistle_time?: string;
+    venue?: string;
+  };
 };
 
-type ApiSocialPost = {
-  id?: number;
-  post_url?: string;
-  posted_at?: string;
-  has_video?: boolean;
-  team_abbreviation?: string;
-  tweet_text?: string;
-  video_url?: string;
-  image_url?: string;
-  source_handle?: string;
-  media_type?: 'video' | 'image' | 'none';
-};
-
-type ApiGameData = {
-  id?: number;
-  home_team?: string;
-  away_team?: string;
-  game_date?: string;
-  game_end_time?: string;
-  final_whistle_time?: string;
-  venue?: string;
-  home_score?: number;
-  away_score?: number;
-};
-
-type ApiTeamStat = {
-  team?: string;
-  is_home?: boolean;
-  stats?: Record<string, unknown>;
-};
-
-type ApiPlayerStat = {
-  team?: string;
-  player_name?: string;
-  points?: number;
-  rebounds?: number;
-  assists?: number;
-  minutes?: number;
-  raw_stats?: Record<string, unknown>;
-};
-
-type ApiPbpEvent = {
-  play_index?: number;
-  quarter?: number;
-  game_clock?: string;
-  play_type?: string | null;
-  team_abbreviation?: string | null;
-  player_name?: string | null;
-  description?: string;
-  home_score?: number | null;
-  away_score?: number | null;
-};
+// Re-export for internal use - these now come from generated types
+type ApiSocialPost = SocialPostEntry;
+type ApiPbpEvent = PlayEntry;
 
 export interface CatchupAdapter {
   getCatchupForGame(gameId: string): Promise<CatchupResponse | null>;

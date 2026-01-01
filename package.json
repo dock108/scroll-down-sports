@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "preview:prod": "vite preview --mode production --host 0.0.0.0",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate:types": "openapi-typescript ../scroll-down-api-spec/spec/openapi.yml -o src/generated/api-types.ts",
+    "generate:types:remote": "openapi-typescript https://raw.githubusercontent.com/dock108/scroll-down-api-spec/main/spec/openapi.yml -o src/generated/api-types.ts"
   },
   "dependencies": {
     "react": "^19.2.3",
@@ -18,6 +20,7 @@
     "react-router-dom": "^7.11.0"
   },
   "devDependencies": {
+    "openapi-typescript": "^7.6.1",
     "@eslint/js": "^9.36.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/react": "^19.2.7",
