@@ -4,6 +4,8 @@ import { DataError } from '../components/feedback/DataError';
 import { PageLayout } from '../components/layout/PageLayout';
 import { FinalStats } from '../components/scores/FinalStats';
 import { GameHeader } from '../components/scores/GameHeader';
+import { GameSubNav } from '../components/navigation/GameSubNav';
+import { GameOverview } from '../components/sections/GameOverview';
 import { TimelineDivider } from '../components/timeline/TimelineDivider';
 import { TimelineSection } from '../components/timeline/TimelineSection';
 import { CollapsibleSection } from '../components/timeline/CollapsibleSection';
@@ -212,10 +214,10 @@ export const GameCatchup = () => {
   const hasPeriodStructure = sortedPeriods.some((p) => p > 0);
 
   return (
-    <PageLayout className="pt-10 pb-28" contentClassName="space-y-12">
+    <PageLayout className="pt-6 pb-28" contentClassName="space-y-0">
       {/* Back navigation */}
-      <Link className="text-xs uppercase tracking-[0.3em] text-gray-500" to="/games">
-        Back to games
+      <Link className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4 inline-block" to="/games">
+        ← Back to games
       </Link>
 
       {/* 1. HEADER - Game Details (spoiler-safe) */}
@@ -224,6 +226,15 @@ export const GameCatchup = () => {
         homeTeam={game.homeTeam || 'Home'}
         venue={game.venue ?? 'Venue TBD'}
         dateLabel={dateLabel}
+      />
+
+      {/* Sticky Sub-Nav */}
+      <GameSubNav />
+
+      {/* OVERVIEW SECTION */}
+      <GameOverview
+        homeTeam={game.homeTeam || 'Home'}
+        awayTeam={game.awayTeam || 'Away'}
       />
 
       {/* PRE-GAME - Expanded by default */}
@@ -242,8 +253,9 @@ export const GameCatchup = () => {
         </CollapsibleSection>
       )}
 
-      {/* 2. MAIN SECTION - Play-by-Play Timeline (each period collapsed by default) */}
-      <section className="game-timeline">
+      {/* 2. MAIN SECTION - Play-by-Play Timeline */}
+      <section id="timeline" className="game-timeline">
+        <h2 className="section-header">Timeline</h2>
         {hasTimeline ? (
           hasPeriodStructure ? (
             // Render each period in a collapsed section
@@ -294,17 +306,20 @@ export const GameCatchup = () => {
       {/* This invisible marker triggers the spoiler-safe reveal once reached */}
       <div ref={statsRevealTriggerRef} aria-hidden="true" />
 
-      {/* 3 & 4. STATS SECTION - Player Stats + Team Stats + Final Score */}
-      <FinalStats
-        revealed={statsRevealed}
-        homeTeam={game.homeTeam || 'Home'}
-        awayTeam={game.awayTeam || 'Away'}
-        attendance={finalDetails.attendance ?? 0}
-        homeScore={finalDetails.homeScore}
-        awayScore={finalDetails.awayScore}
-        teamStats={teamStats}
-        playerStats={playerStats}
-      />
+      {/* FINAL STATS SECTION - Player Stats + Team Stats + Final Score */}
+      <section id="final-score">
+        <h2 className="section-header">Final Stats</h2>
+        <FinalStats
+          revealed={statsRevealed}
+          homeTeam={game.homeTeam || 'Home'}
+          awayTeam={game.awayTeam || 'Away'}
+          attendance={finalDetails.attendance ?? 0}
+          homeScore={finalDetails.homeScore}
+          awayScore={finalDetails.awayScore}
+          teamStats={teamStats}
+          playerStats={playerStats}
+        />
+      </section>
 
       {/* POST-GAME THREAD - After final details (collapsed by default) */}
       {hasPostGame && (

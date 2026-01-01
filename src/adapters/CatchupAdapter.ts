@@ -217,6 +217,7 @@ export class CatchupApiAdapter implements CatchupAdapter {
     const preGamePosts = remainingPosts.slice(0, preGameCount);
     const inGamePosts = remainingPosts.slice(preGameCount);
 
+
     // Convert ALL PBP events to timeline entries
     const pbpEvents = data.plays || [];
     const timeline: TimelineEntry[] = pbpEvents.map((e, index) => ({
@@ -238,13 +239,14 @@ export class CatchupApiAdapter implements CatchupAdapter {
 
     // Distribute in-game posts proportionally across timeline
     if (timeline.length > 0 && inGamePosts.length > 0) {
-      const postsPerSection = Math.ceil(timeline.length / inGamePosts.length);
+      const step = Math.floor(timeline.length / inGamePosts.length);
 
       inGamePosts.forEach((post, postIndex) => {
-        // Distribute post to timeline entry based on proportional position
-        const targetIndex = Math.min(Math.floor(postIndex * postsPerSection), timeline.length - 1);
+        // Distribute post evenly across the timeline
+        const targetIndex = Math.min(postIndex * step, timeline.length - 1);
         timeline[targetIndex].highlights.push(post);
       });
+
     }
 
     // Map player stats from API response

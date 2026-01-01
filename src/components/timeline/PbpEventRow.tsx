@@ -12,56 +12,38 @@ const formatGameClock = (gameClock: string, period: number): string => {
   return `${periodLabel} ${gameClock}`;
 };
 
-const getEventTypeLabel = (eventType: string): string => {
+// Only show labels for notable event types, hide generic "play" labels
+const getEventTypeLabel = (eventType: string): string | null => {
+  const lower = eventType.toLowerCase();
+  // Skip generic play types
+  if (lower === 'play' || lower === 'event' || lower === '') return null;
+  
   const typeMap: Record<string, string> = {
     shot: 'Shot',
-    made_shot: 'Made Shot',
-    missed_shot: 'Missed Shot',
-    rebound: 'Rebound',
-    assist: 'Assist',
-    turnover: 'Turnover',
-    steal: 'Steal',
-    block: 'Block',
+    made_shot: 'Made',
+    missed_shot: 'Miss',
+    rebound: 'Reb',
+    assist: 'Ast',
+    turnover: 'TO',
+    steal: 'Stl',
+    block: 'Blk',
     foul: 'Foul',
-    free_throw: 'Free Throw',
+    free_throw: 'FT',
     timeout: 'Timeout',
-    substitution: 'Substitution',
-    jump_ball: 'Jump Ball',
-    period_start: 'Period Start',
-    period_end: 'Period End',
-    game_end: 'Game End',
-    highlight: 'Highlight',
-  };
-  return typeMap[eventType.toLowerCase()] || eventType;
-};
-
-const getEventTypeIcon = (eventType: string): string => {
-  const iconMap: Record<string, string> = {
-    shot: '🏀',
-    made_shot: '✅',
-    missed_shot: '❌',
-    rebound: '🔄',
-    assist: '👋',
-    turnover: '↩️',
-    steal: '🔥',
-    block: '🛡️',
-    foul: '⚠️',
-    free_throw: '🎯',
-    timeout: '⏸️',
-    substitution: '🔁',
-    jump_ball: '⬆️',
-    period_start: '▶️',
-    period_end: '⏹️',
-    game_end: '🏁',
+    substitution: 'Sub',
+    jump_ball: 'Jump',
+    period_start: 'Start',
+    period_end: 'End',
+    game_end: 'Final',
     highlight: '⭐',
   };
-  return iconMap[eventType.toLowerCase()] || '•';
+  return typeMap[lower] || null;
 };
+
 
 export const PbpEventRow = ({ event, showScore = false }: PbpEventRowProps) => {
   const timeLabel = formatGameClock(event.gameClock, event.period);
   const typeLabel = getEventTypeLabel(event.eventType);
-  const icon = getEventTypeIcon(event.eventType);
 
   return (
     <div className="pbp-event">
@@ -69,23 +51,18 @@ export const PbpEventRow = ({ event, showScore = false }: PbpEventRowProps) => {
         {timeLabel && <span className="pbp-event__clock">{timeLabel}</span>}
       </div>
       <div className="pbp-event__content">
-        <div className="pbp-event__header">
-          <span className="pbp-event__icon" aria-hidden="true">
-            {icon}
+        {/* Only show header row if we have a type label or team */}
+        {(typeLabel || event.team) && (
+          <span className="pbp-event__header">
+            {typeLabel && <span className="pbp-event__type">{typeLabel}</span>}
+            {event.team && <span className="pbp-event__team">{event.team}</span>}
           </span>
-          <span className="pbp-event__type">{typeLabel}</span>
-          {event.team && <span className="pbp-event__team">{event.team}</span>}
-        </div>
-        <p className="pbp-event__description">
-          {event.playerName && (
-            <span className="pbp-event__player">{event.playerName}: </span>
-          )}
-          {event.description}
-        </p>
+        )}
+        <span className="pbp-event__description">{event.description}</span>
         {showScore && event.homeScore !== undefined && event.awayScore !== undefined && (
-          <div className="pbp-event__score">
-            Score: {event.awayScore} - {event.homeScore}
-          </div>
+          <span className="pbp-event__score">
+            {event.awayScore}-{event.homeScore}
+          </span>
         )}
       </div>
     </div>

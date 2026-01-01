@@ -1,10 +1,10 @@
 .x-highlight {
-  max-width: 400px;
+  max-width: 480px;
   width: 100%;
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-xs);
 }
 
 .x-highlight__meta {
@@ -12,25 +12,26 @@
   align-items: center;
   justify-content: space-between;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: var(--font-2xs);
+  letter-spacing: 0.06em;
+  font-size: var(--font-meta);
   color: var(--color-muted);
+  padding: var(--space-xs) 0;
 }
 
 .x-highlight__card {
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
 }
 
 .x-highlight__card--caption-only {
-  padding: var(--space-3);
+  padding: var(--space-sm);
 }
 
 .x-highlight__card:not(.x-highlight__card--caption-only) .x-highlight__caption {
-  padding: var(--space-3);
+  padding: var(--space-sm);
 }
 
 .x-highlight__media {
@@ -86,7 +87,7 @@
 .x-highlight__caption {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-xs);
 }
 
 .x-highlight__caption-link {
@@ -96,7 +97,8 @@
   align-items: center;
   color: var(--color-text);
   text-decoration: none;
-  font-size: var(--font-sm);
+  font-size: var(--font-body);
+  line-height: 1.5;
 }
 
 .x-highlight__caption-link:hover {
@@ -104,17 +106,20 @@
 }
 
 .x-highlight__caption-handle {
-  font-weight: 700;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  color: var(--color-text);
+  font-size: var(--font-meta);
 }
 
 .x-highlight__caption-text {
-  color: var(--color-muted);
+  color: var(--color-muted-strong);
   position: relative;
   display: inline;
   line-height: 1.5;
+  font-size: var(--font-body);
 }
 
 .x-highlight__caption-text--clamped {
@@ -207,30 +212,40 @@
   }
 }
 
-/* Twitter embed container */
+/* Twitter embed container - constrained size */
 .twitter-embed {
   width: 100%;
-  min-height: 200px;
+  max-width: 400px;
+  min-height: 150px;
+  max-height: 500px;
+  overflow: hidden;
 }
 
-.twitter-embed iframe {
+.twitter-embed iframe,
+.twitter-embed .twitter-tweet {
   max-width: 100% !important;
+  transform: scale(0.9);
+  transform-origin: top left;
 }
 
 .twitter-embed-fallback {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80px;
-  padding: var(--space-4);
+  min-height: 60px;
+  padding: var(--space-sm);
+  background: var(--color-surface-tint);
+  border-radius: 8px;
 }
 
 .twitter-embed-fallback a {
   color: var(--color-accent);
   font-weight: 600;
   text-decoration: none;
+  font-size: var(--font-body);
 }
 
 .twitter-embed-fallback a:hover {
   color: var(--color-accent-strong);
+  text-decoration: underline;
 }

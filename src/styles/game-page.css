@@ -1,0 +1,428 @@
+/**
+ * Game Page Styles
+ * Article-like layout with clear hierarchy
+ */
+
+/* ========================================
+   SUB-NAV (sticky anchors)
+   ======================================== */
+.game-subnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-sm) 0;
+  margin: 0 calc(-1 * var(--space-md));
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.game-subnav::-webkit-scrollbar {
+  display: none;
+}
+
+.game-subnav__list {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.game-subnav__link {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+  text-decoration: none;
+  padding: var(--space-xs) 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.game-subnav__link:hover {
+  color: var(--color-text);
+}
+
+.game-subnav__link.active {
+  color: var(--color-text);
+  font-weight: 600;
+  border-bottom-color: var(--color-accent);
+}
+
+/* ========================================
+   SECTION HEADERS (wiki-like)
+   ======================================== */
+.section-header {
+  padding: var(--space-sm) 0 var(--space-xs);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-h2);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.section-header--uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--font-meta);
+}
+
+/* ========================================
+   OVERVIEW SECTION
+   ======================================== */
+.game-overview {
+  padding: var(--space-lg) 0;
+}
+
+.game-overview__summary {
+  font-size: var(--font-body);
+  color: var(--color-muted-strong);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.game-overview__highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-md);
+}
+
+.game-overview__highlights li {
+  padding: var(--space-xs) 0;
+  font-size: var(--font-body);
+  color: var(--color-text);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.game-overview__highlights li::before {
+  content: "•";
+  color: var(--color-accent);
+  font-weight: bold;
+}
+
+/* ========================================
+   QUARTER HEADERS (chapter markers)
+   ======================================== */
+.quarter-header {
+  margin: var(--space-lg) 0 var(--space-sm);
+  padding: var(--space-sm) 0;
+  font-weight: 700;
+  font-size: var(--font-body);
+  color: var(--color-text);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.quarter-header:first-child {
+  margin-top: 0;
+}
+
+/* ========================================
+   PBP ROWS (dense, readable)
+   ======================================== */
+.pbp-row {
+  padding: var(--space-sm) var(--space-md);
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  column-gap: var(--space-md);
+  align-items: baseline;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.pbp-row:nth-child(even) {
+  background: var(--color-zebra);
+}
+
+.pbp-row:last-child {
+  border-bottom: none;
+}
+
+.pbp-meta {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pbp-meta__clock {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.pbp-meta__team {
+  font-size: var(--font-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pbp-description {
+  font-size: var(--font-body);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.pbp-description strong {
+  font-weight: 600;
+}
+
+/* ========================================
+   HIGHLIGHT CARDS (normalized)
+   ======================================== */
+.highlight-card {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: var(--space-sm);
+  margin: var(--space-md) 0;
+  box-shadow: var(--shadow-card);
+  max-width: 480px;
+  background: var(--color-surface);
+}
+
+.highlight-card__header {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.highlight-card__media {
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-surface-tint);
+}
+
+.highlight-card__caption {
+  margin-top: var(--space-sm);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.highlight-card__source {
+  margin-top: var(--space-xs);
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+}
+
+.highlight-card__source a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.highlight-card__source a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   STATS TABLES
+   ======================================== */
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-body);
+}
+
+.stats-table th {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  font-weight: 600;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 2px solid var(--color-border);
+  font-size: var(--font-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-muted-strong);
+}
+
+.stats-table td {
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--color-border-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-table tr:nth-child(even) {
+  background: var(--color-zebra);
+}
+
+.stats-table--compact td,
+.stats-table--compact th {
+  padding: var(--space-xs) var(--space-sm);
+}
+
+/* ========================================
+   FINAL SCORE
+   ======================================== */
+.final-score {
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.final-score__label {
+  font-size: var(--font-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.final-score__matchup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.final-score__team {
+  text-align: center;
+}
+
+.final-score__team-name {
+  font-size: var(--font-body);
+  color: var(--color-muted-strong);
+  margin-bottom: var(--space-xs);
+}
+
+.final-score__team-score {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.final-score__team-score--winner {
+  color: var(--color-accent);
+}
+
+.final-score__divider {
+  font-size: var(--font-h2);
+  color: var(--color-muted);
+  font-weight: 300;
+}
+
+/* ========================================
+   COLLAPSIBLE SECTIONS (Pre/Post-Game)
+   ======================================== */
+.collapsible-section {
+  margin: var(--space-lg) 0;
+}
+
+.collapsible-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.collapsible-section__header:hover {
+  color: var(--color-accent);
+}
+
+.collapsible-section__icon {
+  font-size: 1rem;
+}
+
+.collapsible-section__title {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.collapsible-section__count {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.collapsible-section__chevron {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+  transition: transform 0.2s ease;
+}
+
+.collapsible-section__chevron--expanded {
+  transform: rotate(180deg);
+}
+
+.collapsible-section__content {
+  padding-top: var(--space-md);
+}
+
+/* ========================================
+   THREAD CARDS (compact Pre/Post-Game)
+   ======================================== */
+.thread-card {
+  border: 1px solid var(--color-border-light);
+  padding: var(--space-sm);
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
+  background: var(--color-surface);
+}
+
+.thread-card__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--font-body);
+  line-height: 1.5;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+@media (max-width: 720px) {
+  body {
+    font-size: 16px;
+  }
+
+  .highlight-card {
+    max-width: 100%;
+  }
+
+  .pbp-row {
+    grid-template-columns: 80px 1fr;
+    padding: var(--space-sm);
+  }
+
+  .stats-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .final-score__team-score {
+    font-size: 2rem;
+  }
+
+  .game-subnav__list {
+    gap: var(--space-md);
+  }
+}
+

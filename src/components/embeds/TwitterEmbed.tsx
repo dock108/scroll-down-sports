@@ -34,6 +34,8 @@ export function TwitterEmbed({ tweetUrl, tweetId: providedTweetId }: TwitterEmbe
       window.twttr.widgets.createTweet(tweetId, containerRef.current, {
         theme: 'dark',
         conversation: 'none',
+        width: 400,
+        dnt: true,
       });
     };
 

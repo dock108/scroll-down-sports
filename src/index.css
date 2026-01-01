@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './styles/theme.css';
+@import './styles/game-page.css';
 @import './styles/x-highlight.css';
 @import './styles/timeline.css';
 
