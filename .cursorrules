@@ -1,49 +1,115 @@
-# Cursor Rules — Scroll Down Sports
+# AI Coding Rules
 
-## Purpose
-Ship a clean, spoiler-safe sports recap app.  
-MVP first. Iterate only when it improves UX or reliability.
+## Universal Standards
 
-## Style & Tone
-- Direct, concise, practical.
-- No fluff explanations unless they unblock a decision.
-- Prefer boring, predictable code.
+### Code Quality
+- Write clear, self-documenting code. Comments explain WHY, not WHAT.
+- Small, focused functions. One responsibility per function.
+- No magic numbers or hardcoded strings—use constants.
+- Fail fast. Validate inputs early, handle errors explicitly.
+- No silent failures. Log or surface all errors.
 
-## Decision Making
-- If something is unclear, make the safest assumption and leave a TODO.
-- Keep momentum. Do not stall waiting for clarification.
+### Change Philosophy
+- Prefer minimal, incremental changes over rewrites.
+- Don't refactor unrelated code while fixing bugs.
+- If something works, don't "improve" it without reason.
+- Leave code cleaner than you found it, but don't go overboard.
 
-## Product Truths
-- Users often arrive AFTER games are played.
-- They want context BEFORE spoilers.
-- They should always feel in control of reveals.
+### Dependencies
+- Don't add new dependencies casually.
+- Justify any new package inline.
+- Prefer standard library solutions when reasonable.
 
-## Code Guidelines
-- Small, incremental changes.
-- Do not rewrite major modules unless required.
-- Maintain existing patterns unless a clear gain exists.
-- Avoid new dependencies unless justified inline.
+### Testing
+- Add tests for new logic.
+- If fixing a bug, add a regression test.
+- Tests should be deterministic and fast.
 
-## UI Principles
-- Clean, readable, consistent card layouts.
-- No cluttered embeds.
-- Spoiler-safe by default.
+### Documentation
+- Update README if behavior changes.
+- Add CHANGELOG entries for user-facing changes.
+- Document breaking changes explicitly.
 
-## Documentation
-Whenever behavior changes:
-- update README if user-facing
-- add a short CHANGELOG note
-- leave comments explaining *why*, not *what*
+### What NOT to Do
+- Don't over-engineer or over-abstract.
+- Don't add features that weren't requested.
+- Don't guess—ask or leave a TODO.
+- Don't use print/console.log in production code.
 
-## Testing & Safety
-- If logic changes, update tests.
-- If no tests exist, add minimal coverage (don’t block work).
+---
 
-## What NOT to do
-- Don’t over-architect or over-DRY.
-- Don’t silently “improve” behavior.
-- Don’t introduce breaking UI surprises.
+## Tech Stack: React / TypeScript (Vite)
 
-## Golden Rule
-Does this ship value sooner without breaking trust?
-If yes — do it. If not — TODO and move on.
+### Architecture
+- Functional components with hooks
+- Colocate related code (component + styles + tests)
+- Use TypeScript strictly—no `any` types
+- Prefer composition over inheritance
+
+### React Conventions
+- One component per file
+- Named exports for components
+- Use `useMemo`/`useCallback` only when needed (not by default)
+- Prefer controlled components
+
+### TypeScript Practices
+- Define interfaces for all props
+- Use type inference where obvious
+- Avoid type assertions (`as`) unless necessary
+- Generate API types from OpenAPI spec
+
+### Styling
+- Tailwind CSS for styling
+- Use CSS variables for theme values
+- Mobile-first responsive design
+- Dark mode support via Tailwind
+
+### File Structure
+```
+src/
+├── components/      # Reusable UI components
+├── pages/           # Route-level components
+├── adapters/        # API integration layer
+├── utils/           # Pure utility functions
+├── styles/          # Global styles
+└── generated/       # Auto-generated types (don't edit)
+```
+
+### Prohibited
+- `any` types
+- Direct DOM manipulation
+- Inline styles (use Tailwind)
+- Console.log in committed code
+
+---
+
+## Project: Scroll Down Sports UI
+
+### Purpose
+Web frontend for Scroll Down Sports—spoiler-free sports recaps.
+
+### Core Principles
+- **Spoiler-safe by default**: Users arrive after games are played
+- **Progressive disclosure**: Context before scores
+- **User control**: They decide when to reveal results
+- **MVP first**: Ship value, iterate when needed
+
+### Key Directories
+- `src/components/` — Reusable UI components
+- `src/pages/` — Route pages
+- `src/adapters/` — API integration
+- `src/generated/` — Types from OpenAPI spec (auto-generated)
+
+### UI Guidelines
+- Clean, readable card layouts
+- No cluttered embeds
+- Spoiler-safe by default
+- Consistent spacing and typography
+
+### API Integration
+- Types come from `scroll-down-api-spec`
+- Use adapters to transform API responses
+- Handle loading and error states explicitly
+
+### Protected Files
+- `src/generated/` — Auto-generated, don't manually edit

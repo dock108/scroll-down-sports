@@ -37,3 +37,4 @@ export type TeamListResponse = import('./api-types').components['schemas']['Team
 export type ScrapeRunResponse = import('./api-types').components['schemas']['ScrapeRunResponse'];
 export type JobResponse = import('./api-types').components['schemas']['JobResponse'];
 
+
