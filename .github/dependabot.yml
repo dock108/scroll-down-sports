@@ -1,78 +1,48 @@
 version: 2
-
 updates:
-  # NPM dependencies
-  - package-ecosystem: 'npm'
-    directory: '/'
+  # Keep npm dependencies up to date
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'America/New_York'
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "npm"
     open-pull-requests-limit: 10
+    # Group minor and patch updates to reduce PR noise
     groups:
-      # Group all production dependencies together
-      production-dependencies:
-        dependency-type: 'production'
+      minor-and-patch:
+        patterns:
+          - "*"
         update-types:
-          - 'minor'
-          - 'patch'
-      # Group all dev dependencies together
-      dev-dependencies:
-        dependency-type: 'development'
-        update-types:
-          - 'minor'
-          - 'patch'
-      # Group React ecosystem updates
-      react:
-        patterns:
-          - 'react*'
-          - '@types/react*'
-      # Group Vite and build tooling
-      vite:
-        patterns:
-          - 'vite*'
-          - '@vitejs/*'
-          - 'postcss*'
-          - 'tailwindcss*'
-          - 'autoprefixer*'
-      # Group TypeScript and linting
-      typescript-lint:
-        patterns:
-          - 'typescript*'
-          - '@typescript-eslint/*'
-          - 'eslint*'
-          - '@types/*'
-    commit-message:
-      prefix: 'deps'
-      include: 'scope'
+          - "minor"
+          - "patch"
 
-  # Docker base images
-  - package-ecosystem: 'docker'
-    directory: '/'
+  # Keep Docker base images up to date
+  - package-ecosystem: "docker"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'America/New_York'
-    groups:
-      docker-images:
-        patterns:
-          - '*'
+      interval: "weekly"
+      day: "monday"
     commit-message:
-      prefix: 'deps(docker)'
+      prefix: "docker"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
 
-  # GitHub Actions
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  # Keep GitHub Actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'America/New_York'
-    groups:
-      github-actions:
-        patterns:
-          - '*'
+      interval: "weekly"
+      day: "monday"
     commit-message:
-      prefix: 'deps(actions)'
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 5
