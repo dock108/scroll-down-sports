@@ -4,7 +4,7 @@ import type { GamePreview } from '../../types';
 
 const DETAILS_TITLE = 'Why this game matters';
 const DETAILS_ACTION_LABEL = 'Why this game matters';
-const LOAD_ERROR_MESSAGE = 'Details are unavailable right now.';
+const LOAD_ERROR_MESSAGE = 'Preview unavailable (coming soon)';
 const EMPTY_NUGGET_MESSAGE = 'More context is coming soon.';
 const EMPTY_TAGS_MESSAGE = 'Tags are on the way.';
 const LOADING_MESSAGE = 'Loading details...';
