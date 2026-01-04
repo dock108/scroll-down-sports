@@ -1,7 +1,6 @@
 interface GameOverviewProps {
   homeTeam: string;
   awayTeam: string;
-  // Future: Add summary, key highlights, top video
 }
 
 export const GameOverview = ({ homeTeam, awayTeam }: GameOverviewProps) => {
@@ -16,8 +15,6 @@ export const GameOverview = ({ homeTeam, awayTeam }: GameOverviewProps) => {
         <li>Top performers and standout plays</li>
         <li>Game-changing moments and turning points</li>
       </ul>
-      {/* TODO: Add top highlight video when available */}
     </section>
   );
 };
-
