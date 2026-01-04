@@ -66,6 +66,22 @@ const getScoreSnapshot = (entries: TimelineEntry[]) => {
   return null;
 };
 
+const getPeriodLabel = (period: number) => {
+  if (period > 4) {
+    return period === 5 ? 'Overtime' : `Overtime ${period - 4}`;
+  }
+
+  return ['', '1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'][period] || `Period ${period}`;
+};
+
+const getPeriodShortLabel = (period: number) => {
+  if (period > 4) {
+    return period === 5 ? 'OT' : `OT${period - 4}`;
+  }
+
+  return period ? `Q${period}` : 'Period';
+};
+
 /**
  * Loading skeleton for the timeline
  */
@@ -99,6 +115,7 @@ export const GameCatchup = () => {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [statsRevealed, setStatsRevealed] = useState(false);
+  const [activePeriod, setActivePeriod] = useState<number | null>(null);
   const [isCompactMode, setIsCompactMode] = useState(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -110,6 +127,7 @@ export const GameCatchup = () => {
 
   // Trigger auto-reveal once the reader scrolls past the timeline
   const statsRevealTriggerRef = useRef<HTMLDivElement | null>(null);
+  const periodRefs = useRef<Map<number, HTMLDivElement | null>>(new Map());
 
   // Create adapters
   const gameAdapter = useMemo(() => getGameAdapter(), []);
@@ -203,6 +221,52 @@ export const GameCatchup = () => {
     return Array.from(periodGroups.keys()).sort((a, b) => a - b);
   }, [periodGroups]);
 
+  const periodDisplayData = useMemo(() => {
+    return sortedPeriods.map((period) => {
+      const entries = periodGroups.get(period) || [];
+      const scoreSnapshot = getScoreSnapshot(entries);
+      return {
+        period,
+        label: getPeriodLabel(period),
+        shortLabel: getPeriodShortLabel(period),
+        scoreSnapshot,
+      };
+    });
+  }, [periodGroups, sortedPeriods]);
+
+  useEffect(() => {
+    if (!periodDisplayData.length) return;
+    if (!activePeriod || !periodDisplayData.some((item) => item.period === activePeriod)) {
+      setActivePeriod(periodDisplayData[0].period);
+    }
+  }, [activePeriod, periodDisplayData]);
+
+  useEffect(() => {
+    if (!periodDisplayData.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const periodValue = Number((entry.target as HTMLElement).dataset.period);
+          if (!Number.isNaN(periodValue)) {
+            setActivePeriod(periodValue);
+          }
+        });
+      },
+      {
+        rootMargin: '-35% 0px -55% 0px',
+        threshold: 0,
+      },
+    );
+
+    periodRefs.current.forEach((node) => {
+      if (node) observer.observe(node);
+    });
+
+    return () => observer.disconnect();
+  }, [periodDisplayData]);
+
   if (error) {
     return (
       <PageLayout contentClassName="space-y-0">
@@ -244,6 +308,10 @@ export const GameCatchup = () => {
   const hasPostGame = postGamePosts && postGamePosts.length > 0;
   const hasPeriodStructure = sortedPeriods.some((p) => p > 0);
   const layoutClassName = isCompactMode ? 'pt-4 pb-24' : 'pt-6 pb-28';
+  const activePeriodData = periodDisplayData.find((item) => item.period === activePeriod) ?? periodDisplayData[0];
+  const scoreLabel = activePeriodData?.scoreSnapshot
+    ? `${activePeriodData.scoreSnapshot.awayScore}\u2013${activePeriodData.scoreSnapshot.homeScore}`
+    : '--\u2013--';
 
   return (
     <PageLayout className={layoutClassName} contentClassName="space-y-0">
@@ -264,6 +332,17 @@ export const GameCatchup = () => {
 
       {/* Sticky Sub-Nav */}
       <GameSubNav />
+
+      {hasTimeline && hasPeriodStructure && activePeriodData && (
+        <div className="score-pill" role="status" aria-live="polite">
+          <span className="score-pill__label">Viewing:</span>
+          <span className="score-pill__period">{activePeriodData.shortLabel}</span>
+          <span className="score-pill__divider" aria-hidden="true">
+            |
+          </span>
+          <span className="score-pill__score">{scoreLabel}</span>
+        </div>
+      )}
 
       {/* OVERVIEW SECTION */}
       <GameOverview
@@ -295,14 +374,23 @@ export const GameCatchup = () => {
             // Render each period in a collapsed section
             sortedPeriods.map((period, periodIndex) => {
               const entries = periodGroups.get(period) || [];
-              const periodLabel = period > 4
-                ? (period === 5 ? 'Overtime' : `Overtime ${period - 4}`)
-                : ['', '1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'][period] || `Period ${period}`;
+              const periodLabel = getPeriodLabel(period);
               const scoreSnapshot = getScoreSnapshot(entries);
               const shouldShowScore = Boolean(scoreSnapshot) && periodIndex < sortedPeriods.length - 1;
 
               return (
-                <div key={`period-${period}`}>
+                <div
+                  key={`period-${period}`}
+                  ref={(node) => {
+                    if (node) {
+                      periodRefs.current.set(period, node);
+                    } else {
+                      periodRefs.current.delete(period);
+                    }
+                  }}
+                  data-period={period}
+                  className="timeline-period"
+                >
                   <CollapsibleSection
                     title={periodLabel}
                     icon="🏀"
