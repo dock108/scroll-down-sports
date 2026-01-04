@@ -24,6 +24,116 @@
   margin: 0;
 }
 
+/* Expandable Moment Card */
+.moment-card {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.moment-card__button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: var(--space-md) var(--space-md);
+  cursor: pointer;
+  text-align: left;
+}
+
+.moment-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.moment-card__label {
+  font-size: var(--font-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.moment-card__meta {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+}
+
+.moment-card__cta {
+  font-size: var(--font-sm);
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.moment-card__chevron {
+  font-size: var(--font-meta);
+  color: var(--color-muted);
+  transition: transform 0.2s ease;
+}
+
+.moment-card__chevron--open {
+  transform: rotate(180deg);
+}
+
+.moment-card__content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.2s ease;
+}
+
+.moment-card__content--expanded {
+  max-height: 1200px;
+  opacity: 1;
+}
+
+.moment-card__inner {
+  padding: 0 var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.moment-card__section-title {
+  font-size: var(--font-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--color-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.moment-card__summary {
+  margin: 0;
+  font-size: var(--font-body);
+  color: var(--color-text);
+}
+
+.moment-card__pbp-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.moment-card__posts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.moment-card__empty {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--color-muted);
+}
+
 /* PBP Event Row - Dense, readable, zebra-striped */
 .pbp-event {
   display: grid;
@@ -392,4 +502,3 @@
 .collapsible-section__content {
   padding: var(--space-md) 0;
 }
-

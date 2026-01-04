@@ -293,8 +293,8 @@ export const GameCatchup = () => {
                   count={entries.length}
                   defaultExpanded={false}
                 >
-                  {entries.map((entry) => (
-                    <TimelineSection key={entry.event.id} entry={entry} />
+                  {entries.map((entry, index) => (
+                    <TimelineSection key={entry.event.id} entry={entry} index={index} />
                   ))}
                 </CollapsibleSection>
               );
@@ -307,8 +307,8 @@ export const GameCatchup = () => {
               count={timeline.length}
               defaultExpanded={false}
             >
-              {timeline.map((entry) => (
-                <TimelineSection key={entry.event.id} entry={entry} />
+              {timeline.map((entry, index) => (
+                <TimelineSection key={entry.event.id} entry={entry} index={index} />
               ))}
             </CollapsibleSection>
           )
