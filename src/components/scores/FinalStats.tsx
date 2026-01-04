@@ -10,6 +10,7 @@ interface FinalStatsProps {
   awayScore?: number;
   teamStats?: TeamStat[];
   playerStats?: PlayerStat[];
+  compactMode?: boolean;
 }
 
 // Get minutes from raw_stats (could be "minutes", "min", "minutes_played", etc.)
@@ -81,7 +82,15 @@ export const FinalStats = ({
   awayScore,
   teamStats,
   playerStats,
+  compactMode = false,
 }: FinalStatsProps) => {
+  const boxScoreCellPadding = compactMode ? 'px-2 py-1.5' : 'px-3 py-2';
+  const boxScoreValuePadding = compactMode ? 'px-2 py-1.5' : 'px-2 py-2';
+  const boxScoreTextSize = compactMode ? 'text-xs' : 'text-sm';
+  const sectionSpacing = compactMode ? 'mb-6' : 'mb-8';
+  const cardPadding = compactMode ? 'p-4' : 'p-5';
+  const containerPadding = compactMode ? 'p-4' : 'p-6';
+  const finalScorePadding = compactMode ? 'px-4 py-4' : 'px-6 py-5';
   // Get all stat keys from player raw_stats (union of all players)
   const allPlayerStatKeys = useMemo(() => {
     if (!playerStats?.length) return [];
@@ -185,14 +194,18 @@ export const FinalStats = ({
         </div>
         <div className="relative overflow-x-auto rounded-xl border border-gray-200">
           <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white/90 to-transparent sm:hidden" />
-          <table className="w-full text-sm text-gray-800 whitespace-nowrap">
+          <table className={`w-full whitespace-nowrap text-gray-800 ${boxScoreTextSize}`}>
             <thead className="bg-gray-50 text-xs uppercase tracking-[0.15em] text-gray-500">
               <tr>
-                <th className="sticky top-0 left-0 z-30 bg-gray-50 px-3 py-2 text-left">Player</th>
+                <th
+                  className={`sticky top-0 left-0 z-30 bg-gray-50 text-left ${boxScoreCellPadding}`}
+                >
+                  Player
+                </th>
                 {allPlayerStatKeys.map((key) => (
                   <th
                     key={key}
-                    className="sticky top-0 z-20 bg-gray-50 px-2 py-2 text-right tabular-nums"
+                    className={`sticky top-0 z-20 bg-gray-50 text-right tabular-nums ${boxScoreValuePadding}`}
                   >
                     {formatStatLabel(key)}
                   </th>
@@ -205,11 +218,13 @@ export const FinalStats = ({
                   key={`${p.player_name}-${idx}`}
                   className="group border-t border-gray-100 odd:bg-gray-50/60 hover:bg-gray-50/80"
                 >
-                  <td className="sticky left-0 z-10 bg-white group-odd:bg-gray-50 px-3 py-2 font-medium">
+                  <td
+                    className={`sticky left-0 z-10 bg-white group-odd:bg-gray-50 font-medium ${boxScoreCellPadding}`}
+                  >
                     {p.player_name}
                   </td>
                   {allPlayerStatKeys.map((key) => (
-                    <td key={key} className="px-2 py-2 text-right tabular-nums">
+                    <td key={key} className={`text-right tabular-nums ${boxScoreValuePadding}`}>
                       {formatStatValue(key, p.raw_stats?.[key])}
                     </td>
                   ))}
@@ -232,7 +247,7 @@ export const FinalStats = ({
       <div
         className={`overflow-hidden rounded-2xl bg-white transition-all duration-700 ease-out ${
           revealed
-            ? 'translate-y-0 border border-gray-200 p-6 shadow-sm'
+            ? `translate-y-0 border border-gray-200 shadow-sm ${containerPadding}`
             : 'translate-y-4 border border-transparent p-0'
         }`}
       >
@@ -242,7 +257,7 @@ export const FinalStats = ({
 
         {/* 1. PLAYER STATS - Box score by team */}
         {(awayPlayers.length > 0 || homePlayers.length > 0) && (
-          <div className="mb-8">
+          <div className={sectionSpacing}>
             <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Box Score</p>
             {renderBoxScore(awayPlayers, awayTeamStats?.team || awayTeam, 'Away')}
             {renderBoxScore(homePlayers, homeTeamStats?.team || homeTeam, 'Home')}
@@ -251,12 +266,12 @@ export const FinalStats = ({
 
         {/* 2. TEAM STATS - Full display for each team (excluding points) */}
         {(awayTeamStats || homeTeamStats) && (
-          <div className="mb-8">
+          <div className={sectionSpacing}>
             <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-3">Team Stats</p>
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Away Team */}
               {awayTeamStats && (
-                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                <div className={`rounded-xl border border-gray-200 bg-white ${cardPadding}`}>
                   <div className="flex items-baseline justify-between mb-4">
                     <div className="text-lg font-semibold text-gray-800">{awayTeamStats.team}</div>
                     <span className="text-xs uppercase tracking-[0.2em] text-gray-400">Away</span>
@@ -273,7 +288,7 @@ export const FinalStats = ({
               )}
               {/* Home Team */}
               {homeTeamStats && (
-                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                <div className={`rounded-xl border border-gray-200 bg-white ${cardPadding}`}>
                   <div className="flex items-baseline justify-between mb-4">
                     <div className="text-lg font-semibold text-gray-800">{homeTeamStats.team}</div>
                     <span className="text-xs uppercase tracking-[0.2em] text-gray-400">Home</span>
@@ -293,7 +308,7 @@ export const FinalStats = ({
         )}
 
         {/* Final score appears last to preserve the spoiler-safe flow. */}
-        <div className="rounded-2xl border border-gray-200 bg-gray-50 px-6 py-5 mb-8">
+        <div className={`rounded-2xl border border-gray-200 bg-gray-50 mb-8 ${finalScorePadding}`}>
           <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">Final Score</p>
           <div className="flex items-center justify-between py-2 border-b border-gray-200">
             <div className="text-xl font-semibold text-gray-800">{awayTeam}</div>
