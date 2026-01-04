@@ -85,6 +85,14 @@ export const GameCatchup = () => {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [statsRevealed, setStatsRevealed] = useState(false);
+  const [isCompactMode, setIsCompactMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.localStorage.getItem('sds-compact-mode') === 'true';
+    } catch {
+      return false;
+    }
+  });
 
   // Trigger auto-reveal once the reader scrolls past the timeline
   const statsRevealTriggerRef = useRef<HTMLDivElement | null>(null);
@@ -158,6 +166,15 @@ export const GameCatchup = () => {
     return () => observer.disconnect();
   }, [statsRevealed, isLoading]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem('sds-compact-mode', String(isCompactMode));
+    } catch {
+      return;
+    }
+  }, [isCompactMode]);
+
   const handleRetry = () => {
     setRetryCount((c) => c + 1);
   };
@@ -212,9 +229,10 @@ export const GameCatchup = () => {
   const hasPreGame = preGamePosts && preGamePosts.length > 0;
   const hasPostGame = postGamePosts && postGamePosts.length > 0;
   const hasPeriodStructure = sortedPeriods.some((p) => p > 0);
+  const layoutClassName = isCompactMode ? 'pt-4 pb-24' : 'pt-6 pb-28';
 
   return (
-    <PageLayout className="pt-6 pb-28" contentClassName="space-y-0">
+    <PageLayout className={layoutClassName} contentClassName="space-y-0">
       {/* Back navigation */}
       <Link className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4 inline-block" to="/games">
         ← Back to games
@@ -226,6 +244,8 @@ export const GameCatchup = () => {
         homeTeam={game.homeTeam || 'Home'}
         venue={game.venue ?? 'Venue TBD'}
         dateLabel={dateLabel}
+        compactMode={isCompactMode}
+        onCompactModeChange={setIsCompactMode}
       />
 
       {/* Sticky Sub-Nav */}
@@ -318,6 +338,7 @@ export const GameCatchup = () => {
           awayScore={finalDetails.awayScore}
           teamStats={teamStats}
           playerStats={playerStats}
+          compactMode={isCompactMode}
         />
       </section>
 
@@ -339,4 +360,3 @@ export const GameCatchup = () => {
     </PageLayout>
   );
 };
-
