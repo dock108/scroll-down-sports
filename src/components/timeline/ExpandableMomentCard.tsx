@@ -29,6 +29,9 @@ const SUMMARY_MAX_LENGTH = 200;
 const SUMMARY_FALLBACK = 'AI summary unavailable right now.';
 const SUMMARY_EMPTY = 'AI summary coming soon.';
 
+const summaryCache = new Map<string, string | null>();
+const summaryErrorCache = new Set<string>();
+
 const redactScores = (value: string) =>
   value
     .replace(/\b\d{1,3}\s*[-–—]\s*\d{1,3}\b/g, 'score redacted')
@@ -69,6 +72,20 @@ export const ExpandableMomentCard = ({
     entry.event.eventType !== 'highlight';
 
   useEffect(() => {
+    if (entry.momentId) {
+      if (summaryCache.has(entry.momentId)) {
+        setSummary(summaryCache.get(entry.momentId) ?? null);
+        setSummaryError(summaryErrorCache.has(entry.momentId));
+        setIsSummaryLoading(false);
+        return;
+      }
+      if (summaryErrorCache.has(entry.momentId)) {
+        setSummary(null);
+        setSummaryError(true);
+        setIsSummaryLoading(false);
+        return;
+      }
+    }
     setSummary(null);
     setSummaryError(false);
     setIsSummaryLoading(false);
@@ -116,6 +133,7 @@ export const ExpandableMomentCard = ({
 
   useEffect(() => {
     if (!isExpanded || !entry.momentId || summary || isSummaryLoading) return;
+    if (summaryCache.has(entry.momentId) || summaryErrorCache.has(entry.momentId)) return;
 
     let isActive = true;
 
@@ -127,11 +145,14 @@ export const ExpandableMomentCard = ({
         const response = await summaryAdapter.getSummaryForMoment(entry.momentId);
         if (isActive) {
           setSummary(response);
+          summaryCache.set(entry.momentId, response);
+          summaryErrorCache.delete(entry.momentId);
         }
       } catch {
         if (isActive) {
           setSummaryError(true);
           setSummary(null);
+          summaryErrorCache.add(entry.momentId);
         }
       } finally {
         if (isActive) {
