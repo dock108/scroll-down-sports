@@ -2,7 +2,7 @@
 
 ## Conceptual overview
 
-Scroll Down Sports is built around a single promise: **highlights first, spoilers last**. Users pick a finished game, scroll through an article-style timeline of highlights, and only then reveal the final score and stats. The UI is intentionally calm and predictable so the spoiler-safe flow is easy to trust and easy to extend.
+Scroll Down Sports is built around a single promise: **context first, outcome last**. Users pick a finished game, scroll through a timeline of play-by-play events and highlights, and only then see the final score and stats. The UI is intentionally calm and predictable so the pacing flow is easy to trust and easy to extend.
 
 ## Local development
 
@@ -38,11 +38,11 @@ npm run format       # Format with Prettier
 - Media URLs are remote and never re-hosted; captions link back to the original X post.
 - The component reserves layout space with a fixed aspect ratio, lazy-loads media on scroll, and clamps long captions with a "Show more" toggle.
 
-## Spoiler-safe philosophy
+## Pacing philosophy
 
-- The replay timeline stays chronological so the scroll mirrors the game narrative.
+- The timeline stays chronological so the scroll mirrors the game narrative.
 - The reveal for final stats is gated by an `IntersectionObserver` trigger after the last highlight.
-- Final scores appear at the end of the stats block to preserve the "no spoilers until you finish scrolling" promise.
+- Final scores appear at the end of the stats block to preserve the "context before outcome" promise.
 
 ## Data flow
 
@@ -57,10 +57,10 @@ npm run format       # Format with Prettier
 
 ## Key files
 
-| File                                             | Purpose                               |
-| ------------------------------------------------ | ------------------------------------- |
-| `src/pages/GameCatchup.tsx`                      | Main catchup page with spoiler reveal |
-| `src/adapters/CatchupAdapter.ts`                 | Data fetching and mapping             |
-| `src/components/embeds/XHighlight.tsx`           | Social post card                      |
-| `src/components/timeline/CollapsibleSection.tsx` | Expandable section wrapper            |
-| `src/components/timeline/TimelineSection.tsx`    | PBP event + highlights                |
+| File                                             | Purpose                              |
+| ------------------------------------------------ | ------------------------------------ |
+| `src/pages/GameCatchup.tsx`                      | Main catchup page with paced reveal  |
+| `src/adapters/CatchupAdapter.ts`                 | Data fetching and mapping            |
+| `src/components/embeds/XHighlight.tsx`           | Social post card                     |
+| `src/components/timeline/CollapsibleSection.tsx` | Expandable section wrapper           |
+| `src/components/timeline/TimelineSection.tsx`    | PBP event + highlights               |

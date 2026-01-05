@@ -33,7 +33,7 @@ Env Overrides: `import.meta.env.VITE_ENABLE_PREVIEW_SCORES` (build-time)
 Purpose: Enables preview score display for environments that should allow early score visibility.
 MVP or Permanent: MVP
 Classification: FEATURE_FLAG
-Notes: Set to `true` to allow preview scores in builds where spoiler controls permit it.
+Notes: Set to `true` to allow preview scores in builds where pacing controls permit it.
 
 ### Pre-Game / Timeline / Post-Game Collapsible Sections
 Flag Name: `defaultExpanded` (Collapsible section expansion state)
@@ -45,7 +45,7 @@ MVP or Permanent: Permanent
 Classification: PERMANENT_CONFIG
 Notes: `GameCatchup` sets Pre-Game to expanded by default; timeline periods and Post-Game default to collapsed.
 
-### Highlight Caption “Show more/less”
+### Highlight Caption "Show more/less"
 Flag Name: `isExpanded` (caption clamp toggle)
 File / Location: `src/components/embeds/XHighlight.tsx`
 Default Value: `false`
@@ -55,7 +55,7 @@ MVP or Permanent: Permanent
 Classification: PERMANENT_CONFIG
 Notes: Clamp applies when caption length exceeds `CAPTION_MAX_CHARS` (140).
 
-### Spoiler-Safe Final Stats Reveal
+### Paced Final Stats Reveal
 Flag Name: `statsRevealed` (auto-reveal state)
 File / Location: `src/pages/GameCatchup.tsx`, `src/components/scores/FinalStats.tsx`
 Default Value: `false`

@@ -2,27 +2,27 @@
 
 ## Purpose
 
-Scroll Down Sports provides a spoiler-safe game replay experience so fans can catch up on finished games without seeing the final score too early.
+Scroll Down Sports is a game catch-up experience for fans who couldn't watch live. It lets users review finished games in sequence—context first, key moments next, outcome last—so they can follow what happened at their own pace.
 
 For deeper intent and principles, see [`project-intent.md`](project-intent.md).
 
 ## Current capabilities
 
-- Spoiler-safe browsing with score reveal gated by scrolling behavior.
-- Date range filtering for finished games.
-- Full play-by-play timeline with all PBP events from the database.
-- Social posts woven into the timeline, distributed proportionally across PBP events.
-- Pre-game section: first 20% of posts appear before the timeline.
-- Collapsible quarters for easy navigation.
-- Custom X/Twitter embeds for highlights with images and text.
-- Player and team stats revealed after scrolling through the timeline.
+- **Sequential game review**: Scroll through the timeline to experience the game chronologically
+- **Date range filtering**: Browse finished games by date
+- **Full play-by-play**: All PBP events from the database, organized by quarter
+- **Social highlights**: Posts from team accounts woven into the timeline
+- **Pre-game section**: First 20% of posts appear before the timeline for context
+- **Collapsible sections**: Quarters expand on demand so users control their pace
+- **Custom X embeds**: Social highlight cards with images and text
+- **Stats at the end**: Player and team stats appear after scrolling through the timeline
 
 ## Score and data context
 
-- **What scores mean:** Scores represent the curated recap outcome shown after users opt in to reveal results.
-- **Not predictions:** Scores are not forecasts or betting guidance; they only summarize completed game results.
-- **Pregame context only:** Any content shown before the reveal is intended for context and hype, not outcome hints.
-- **Roadmap for real data hookups:** We plan to replace placeholder values with live, validated feeds as data integrations mature.
+- **Outcome at the end**: Final scores are shown after users scroll through the full timeline
+- **Not predictions**: Scores represent completed game results, not forecasts or betting guidance
+- **Pregame context**: Content shown before the timeline is for context, not outcome hints
+- **Live data integration**: The UI fetches from the backend API; no mock data
 
 ## Roadmap
 

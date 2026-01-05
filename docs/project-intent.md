@@ -3,7 +3,7 @@
 ## Why this exists
 
 People miss games.  
-Traditional highlight feeds spoil everything too fast.
+Traditional highlight feeds jump straight to the ending.
 
 This app lets fans:
 
@@ -15,7 +15,7 @@ This app lets fans:
 ## Principles
 
 - MVP first, polish second
-- spoiler control is sacred
+- pacing is sacred—context first, outcome last
 - simple UI > fancy UI
 - iterate without breaking trust
 
@@ -23,7 +23,7 @@ This app lets fans:
 
 Start with:
 
-- recap flows
+- catch-up flows
 - play-by-play summaries
 - structured embeds (no messy social widgets)
 
@@ -31,10 +31,10 @@ Expand thoughtfully only when it improves experience.
 
 ## AI + Dev Expectations
 
-- don’t overbuild abstractions
+- don't overbuild abstractions
 - keep changes reversible
 - document meaningful behavior differences
-- always maintain spoiler-awareness
+- always respect the timeline flow
 
 Everything ladders back to:
-“Does this help users follow a game — without ruining it?”
+"Does this help users follow a game — without jumping straight to the ending?"

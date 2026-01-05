@@ -39,7 +39,7 @@ Table: `game_social_posts`
 | image_url    | TEXT      | Remote image URL (not hosted)   |
 | has_video    | BOOLEAN   | Optional flag for video content |
 
-**Not stored in frontend:** engagement metrics. The backend owns collection and spoiler filtering.
+**Not stored in frontend:** engagement metrics. The backend owns collection and score filtering.
 
 ## Game Social Window
 
@@ -56,9 +56,9 @@ This window:
 - Captures in-game highlights
 - Avoids most post-game "FINAL" posts
 
-## Spoiler Filtering
+## Score Filtering
 
-Spoiler filtering is handled in the backend at collection time. The frontend additionally truncates score-like patterns to avoid spoilers in captions.
+Score filtering is handled in the backend at collection time. The frontend additionally truncates score-like patterns to preserve the paced timeline experience.
 
 ## Frontend Integration
 
@@ -67,7 +67,7 @@ Spoiler filtering is handled in the backend at collection time. The frontend add
 The frontend renders a custom highlight card that includes:
 
 - Native `<video>` (or `<img>`) with remote URLs
-- Caption in the format `@handle: text`, with spoiler-like scores trimmed
+- Caption in the format `@handle: text`, with score-like patterns trimmed
 - Caption link to the original X post
 - Subtle X icon next to the handle
 - Skeleton loaders, fixed aspect ratio, and lazy-loading to avoid layout shift
